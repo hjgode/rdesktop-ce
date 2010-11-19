@@ -1,4 +1,4 @@
-#summary Using an ini file to control redesktop-ce
+#summary Using an ini file to control rdesktop-ce
 #labels Featured
 
 = The ini file explained =
@@ -10,7 +10,7 @@ You can start a terminal server connection by starting winrdesktop.exe with a nu
 
 Here is a sample ini file. You can either place the ini file in the root of the windows ce or windows mobile device or in the directory where winrdesktop.exe is stored.
 
-'[main]
+`[`main`]`
 
 server=192.168.128.5
 
@@ -24,7 +24,7 @@ bpp=16
 
 geometry=1024x768
 
-#fullscreen'
+`#`fullscreen
 
 ==server==
 provide the server IP or DNS host name

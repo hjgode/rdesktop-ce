@@ -3,7 +3,7 @@
 
 = The ini file explained =
 
-You can start a terminal server connection by starting winrdesktop.exe with a number of arguments or by providing an ini file with the connection settings.
+You can start a terminal server connection by starting winrdesktop.exe with a number of arguments (CommandLine) or by providing an ini file with the connection settings.
 
 
 = The ini file =

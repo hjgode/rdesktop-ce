@@ -13,4 +13,4 @@ WinRDesktop `[`-g widthxheight`]` `[`-t port`]` `[`-a bpp`]`
 
     server-name-or-ip
 
-see also winrdesktopini
+see also WinRdesktopIni

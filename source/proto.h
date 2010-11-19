@@ -49,6 +49,7 @@ VCHANNEL *channel_register(char *name, uint32 flags, void (*callback) (STREAM));
 STREAM channel_init(VCHANNEL * channel, uint32 length);
 void channel_send(STREAM s, VCHANNEL * channel);
 void channel_process(STREAM s, uint16 mcs_channel);
+
 /* cliprdr.c */
 void cliprdr_send_simple_native_format_announce(uint32 format);
 void cliprdr_send_native_format_announce(uint8 * formats_data, uint32 formats_data_length);
@@ -56,6 +57,7 @@ void cliprdr_send_data_request(uint32 format);
 void cliprdr_send_data(uint8 * data, uint32 length);
 void cliprdr_set_mode(const char *optarg);
 BOOL cliprdr_init(void);
+
 /* disk.c */
 int disk_enum_devices(uint32 * id, char *optarg);
 RD_NTSTATUS disk_query_information(RD_NTHANDLE handle, uint32 info_class, STREAM out);
@@ -201,6 +203,7 @@ BOOL tcp_connect(char *server);
 void tcp_disconnect(void);
 char *tcp_get_address(void);
 void tcp_reset_state(void);
+
 /* xclip.c */
 void ui_clip_format_announce(uint8 * data, uint32 length);
 void ui_clip_handle_data(uint8 * data, uint32 length);
@@ -209,6 +212,7 @@ void ui_clip_request_data(uint32 format);
 void ui_clip_sync(void);
 void ui_clip_set_mode(const char *optarg);
 void xclip_init(void);
+
 /* xkeymap.c */
 BOOL xkeymap_from_locale(const char *locale);
 FILE *xkeymap_open(const char *filename);

@@ -189,7 +189,7 @@ process_destblt(STREAM s, DESTBLT_ORDER * os, uint32 present, BOOL delta)
 	if (present & 0x10)
 		in_uint8(s, os->opcode);
 
-	DEBUG(("DESTBLT(op=0x%x,x=%d,y=%d,cx=%d,cy=%d)\n",
+	DEBUGMSG(DBG_ORDERS, (L"DESTBLT(op=0x%x,x=%d,y=%d,cx=%d,cy=%d)\n",
 	       os->opcode, os->x, os->y, os->cx, os->cy));
 
 	ui_destblt(ROP2_S(os->opcode), os->x, os->y, os->cx, os->cy);
@@ -222,7 +222,7 @@ process_patblt(STREAM s, PATBLT_ORDER * os, uint32 present, BOOL delta)
 
 	rdp_parse_brush(s, &os->brush, present >> 7);
 
-	DEBUG(("PATBLT(op=0x%x,x=%d,y=%d,cx=%d,cy=%d,bs=%d,bg=0x%x,fg=0x%x)\n", os->opcode, os->x,
+	DEBUGMSG(DBG_ORDERS, (L"PATBLT(op=0x%x,x=%d,y=%d,cx=%d,cy=%d,bs=%d,bg=0x%x,fg=0x%x)\n", os->opcode, os->x,
 	       os->y, os->cx, os->cy, os->brush.style, os->bgcolour, os->fgcolour));
 
 	ui_patblt(ROP2_P(os->opcode), os->x, os->y, os->cx, os->cy,
@@ -254,7 +254,7 @@ process_screenblt(STREAM s, SCREENBLT_ORDER * os, uint32 present, BOOL delta)
 	if (present & 0x0040)
 		rdp_in_coord(s, &os->srcy, delta);
 
-	DEBUG(("SCREENBLT(op=0x%x,x=%d,y=%d,cx=%d,cy=%d,srcx=%d,srcy=%d)\n",
+	DEBUGMSG(DBG_ORDERS, (L"SCREENBLT(op=0x%x,x=%d,y=%d,cx=%d,cy=%d,srcx=%d,srcy=%d)\n",
 	       os->opcode, os->x, os->y, os->cx, os->cy, os->srcx, os->srcy));
 
 	ui_screenblt(ROP2_S(os->opcode), os->x, os->y, os->cx, os->cy, os->srcx, os->srcy);
@@ -287,7 +287,7 @@ process_line(STREAM s, LINE_ORDER * os, uint32 present, BOOL delta)
 
 	rdp_parse_pen(s, &os->pen, present >> 7);
 
-	DEBUG(("LINE(op=0x%x,sx=%d,sy=%d,dx=%d,dy=%d,fg=0x%x)\n",
+	DEBUGMSG(DBG_ORDERS, (L"LINE(op=0x%x,sx=%d,sy=%d,dx=%d,dy=%d,fg=0x%x)\n",
 	       os->opcode, os->startx, os->starty, os->endx, os->endy, os->pen.colour));
 
 	if (os->opcode < 0x01 || os->opcode > 0x10)
@@ -334,7 +334,7 @@ process_rect(STREAM s, RECT_ORDER * os, uint32 present, BOOL delta)
 		os->colour = (os->colour & 0xff00ffff) | (i << 16);
 	}
 
-	DEBUG(("RECT(x=%d,y=%d,cx=%d,cy=%d,fg=0x%x)\n", os->x, os->y, os->cx, os->cy, os->colour));
+	DEBUGMSG(DBG_ORDERS, (L"RECT(x=%d,y=%d,cx=%d,cy=%d,fg=0x%x)\n", os->x, os->y, os->cx, os->cy, os->colour));
 
 	ui_rect(os->x, os->y, os->cx, os->cy, os->colour);
 }
@@ -363,7 +363,7 @@ process_desksave(STREAM s, DESKSAVE_ORDER * os, uint32 present, BOOL delta)
 	if (present & 0x20)
 		in_uint8(s, os->action);
 
-	DEBUG(("DESKSAVE(l=%d,t=%d,r=%d,b=%d,off=%d,op=%d)\n",
+	DEBUGMSG(DBG_ORDERS, (L"DESKSAVE(l=%d,t=%d,r=%d,b=%d,off=%d,op=%d)\n",
 	       os->left, os->top, os->right, os->bottom, os->offset, os->action));
 
 	width = os->right - os->left + 1;
@@ -411,7 +411,7 @@ process_memblt(STREAM s, MEMBLT_ORDER * os, uint32 present, BOOL delta)
 	if (present & 0x0100)
 		in_uint16_le(s, os->cache_idx);
 
-	DEBUG(("MEMBLT(op=0x%x,x=%d,y=%d,cx=%d,cy=%d,id=%d,idx=%d)\n",
+	DEBUGMSG(DBG_ORDERS, (L"MEMBLT(op=0x%x,x=%d,y=%d,cx=%d,cy=%d,id=%d,idx=%d)\n",
 	       os->opcode, os->x, os->y, os->cx, os->cy, os->cache_id, os->cache_idx));
 
 	bitmap = cache_get_bitmap(os->cache_id, os->cache_idx);
@@ -468,7 +468,7 @@ process_triblt(STREAM s, TRIBLT_ORDER * os, uint32 present, BOOL delta)
 	if (present & 0x010000)
 		in_uint16_le(s, os->unknown);
 
-	DEBUG(("TRIBLT(op=0x%x,x=%d,y=%d,cx=%d,cy=%d,id=%d,idx=%d,bs=%d,bg=0x%x,fg=0x%x)\n",
+	DEBUGMSG(DBG_ORDERS, (L"TRIBLT(op=0x%x,x=%d,y=%d,cx=%d,cy=%d,id=%d,idx=%d,bs=%d,bg=0x%x,fg=0x%x)\n",
 	       os->opcode, os->x, os->y, os->cx, os->cy, os->cache_id, os->cache_idx,
 	       os->brush.style, os->bgcolour, os->fgcolour));
 
@@ -512,15 +512,15 @@ process_polygon(STREAM s, POLYGON_ORDER * os, uint32 present, BOOL delta)
 		in_uint8a(s, os->data, os->datasize);
 	}
 
-	DEBUG(("POLYGON(x=%d,y=%d,op=0x%x,fm=%d,fg=0x%x,n=%d,sz=%d)\n",
+	DEBUGMSG(DBG_ORDERS, (L"POLYGON(x=%d,y=%d,op=0x%x,fm=%d,fg=0x%x,n=%d,sz=%d)\n",
 	       os->x, os->y, os->opcode, os->fillmode, os->fgcolour, os->npoints, os->datasize));
 
-	DEBUG(("Data: "));
+	DEBUGMSG(DBG_ORDERS, (L"Data: "));
 
 	for (index = 0; index < os->datasize; index++)
-		DEBUG(("%02x ", os->data[index]));
+		DEBUGMSG(DBG_ORDERS, (L"%02x ", os->data[index]));
 
-	DEBUG(("\n"));
+	DEBUGMSG(DBG_ORDERS, (L"\n"));
 
 	if (os->opcode < 0x01 || os->opcode > 0x10)
 	{
@@ -596,16 +596,16 @@ process_polygon2(STREAM s, POLYGON2_ORDER * os, uint32 present, BOOL delta)
 		in_uint8a(s, os->data, os->datasize);
 	}
 
-	DEBUG(("POLYGON2(x=%d,y=%d,op=0x%x,fm=%d,bs=%d,bg=0x%x,fg=0x%x,n=%d,sz=%d)\n",
+	DEBUGMSG(DBG_ORDERS, (L"POLYGON2(x=%d,y=%d,op=0x%x,fm=%d,bs=%d,bg=0x%x,fg=0x%x,n=%d,sz=%d)\n",
 	       os->x, os->y, os->opcode, os->fillmode, os->brush.style, os->bgcolour, os->fgcolour,
 	       os->npoints, os->datasize));
 
-	DEBUG(("Data: "));
+	DEBUGMSG(DBG_ORDERS, (L"Data: "));
 
 	for (index = 0; index < os->datasize; index++)
-		DEBUG(("%02x ", os->data[index]));
+		DEBUGMSG(DBG_ORDERS, (L"%02x ", os->data[index]));
 
-	DEBUG(("\n"));
+	DEBUGMSG(DBG_ORDERS, (L"\n"));
 
 	if (os->opcode < 0x01 || os->opcode > 0x10)
 	{
@@ -674,15 +674,15 @@ process_polyline(STREAM s, POLYLINE_ORDER * os, uint32 present, BOOL delta)
 		in_uint8a(s, os->data, os->datasize);
 	}
 
-	DEBUG(("POLYLINE(x=%d,y=%d,op=0x%x,fg=0x%x,n=%d,sz=%d)\n",
+	DEBUGMSG(DBG_ORDERS, (L"POLYLINE(x=%d,y=%d,op=0x%x,fg=0x%x,n=%d,sz=%d)\n",
 	       os->x, os->y, os->opcode, os->fgcolour, os->lines, os->datasize));
 
-	DEBUG(("Data: "));
+	DEBUGMSG(DBG_ORDERS, (L"Data: "));
 
 	for (index = 0; index < os->datasize; index++)
-		DEBUG(("%02x ", os->data[index]));
+		DEBUGMSG(DBG_ORDERS, (L"%02x ", os->data[index]));
 
-	DEBUG(("\n"));
+	DEBUGMSG(DBG_ORDERS, (L"\n"));
 
 	if (os->opcode < 0x01 || os->opcode > 0x10)
 	{
@@ -747,7 +747,7 @@ process_ellipse(STREAM s, ELLIPSE_ORDER * os, uint32 present, BOOL delta)
 	if (present & 0x40)
 		rdp_in_colour(s, &os->fgcolour);
 
-	DEBUG(("ELLIPSE(l=%d,t=%d,r=%d,b=%d,op=0x%x,fm=%d,fg=0x%x)\n", os->left, os->top,
+	DEBUGMSG(DBG_ORDERS, (L"ELLIPSE(l=%d,t=%d,r=%d,b=%d,op=0x%x,fm=%d,fg=0x%x)\n", os->left, os->top,
 	       os->right, os->bottom, os->opcode, os->fillmode, os->fgcolour));
 
 	ui_ellipse(ROP_MINUS_1(os->opcode), os->fillmode, os->left, os->top, os->right - os->left,
@@ -784,7 +784,7 @@ process_ellipse2(STREAM s, ELLIPSE2_ORDER * os, uint32 present, BOOL delta)
 
 	rdp_parse_brush(s, &os->brush, present >> 8);
 
-	DEBUG(("ELLIPSE2(l=%d,t=%d,r=%d,b=%d,op=0x%x,fm=%d,bs=%d,bg=0x%x,fg=0x%x)\n",
+	DEBUGMSG(DBG_ORDERS, (L"ELLIPSE2(l=%d,t=%d,r=%d,b=%d,op=0x%x,fm=%d,bs=%d,bg=0x%x,fg=0x%x)\n",
 	       os->left, os->top, os->right, os->bottom, os->opcode, os->fillmode, os->brush.style,
 	       os->bgcolour, os->fgcolour));
 
@@ -854,14 +854,14 @@ process_text2(STREAM s, TEXT2_ORDER * os, uint32 present, BOOL delta)
 		in_uint8a(s, os->text, os->length);
 	}
 
-	DEBUG(("TEXT2(x=%d,y=%d,cl=%d,ct=%d,cr=%d,cb=%d,bl=%d,bt=%d,br=%d,bb=%d,bs=%d,bg=0x%x,fg=0x%x,font=%d,fl=0x%x,op=0x%x,mix=%d,n=%d)\n", os->x, os->y, os->clipleft, os->cliptop, os->clipright, os->clipbottom, os->boxleft, os->boxtop, os->boxright, os->boxbottom, os->brush.style, os->bgcolour, os->fgcolour, os->font, os->flags, os->opcode, os->mixmode, os->length));
+	DEBUGMSG(DBG_ORDERS, (L"TEXT2(x=%d,y=%d,cl=%d,ct=%d,cr=%d,cb=%d,bl=%d,bt=%d,br=%d,bb=%d,bs=%d,bg=0x%x,fg=0x%x,font=%d,fl=0x%x,op=0x%x,mix=%d,n=%d)\n", os->x, os->y, os->clipleft, os->cliptop, os->clipright, os->clipbottom, os->boxleft, os->boxtop, os->boxright, os->boxbottom, os->brush.style, os->bgcolour, os->fgcolour, os->font, os->flags, os->opcode, os->mixmode, os->length));
 
-	DEBUG(("Text: "));
+	DEBUGMSG(DBG_ORDERS, (L"Text: "));
 
 	for (i = 0; i < os->length; i++)
-		DEBUG(("%02x ", os->text[i]));
+		DEBUGMSG(DBG_ORDERS, (L"%02x ", os->text[i]));
 
-	DEBUG(("\n"));
+	DEBUGMSG(DBG_ORDERS, (L"\n"));
 
 	ui_draw_text(os->font, os->flags, ROP_MINUS_1(os->opcode), os->mixmode, os->x, os->y,
 		     os->clipleft, os->cliptop, os->clipright - os->clipleft,
@@ -890,7 +890,7 @@ process_raw_bmpcache(STREAM s)
 	in_uint16_le(s, cache_idx);
 	in_uint8p(s, data, bufsize);
 
-	DEBUG(("RAW_BMPCACHE(cx=%d,cy=%d,id=%d,idx=%d)\n", width, height, cache_id, cache_idx));
+	DEBUGMSG(DBG_ORDERS, (L"RAW_BMPCACHE(cx=%d,cy=%d,id=%d,idx=%d)\n", width, height, cache_id, cache_idx));
 	inverted = (uint8 *) xmalloc(width * height * Bpp);
 	for (y = 0; y < height; y++)
 	{
@@ -942,7 +942,7 @@ process_bmpcache(STREAM s)
 	}
 	in_uint8p(s, data, size);
 
-	DEBUG(("BMPCACHE(cx=%d,cy=%d,id=%d,idx=%d,bpp=%d,size=%d,pad1=%d,bufsize=%d,pad2=%d,rs=%d,fs=%d)\n", width, height, cache_id, cache_idx, bpp, size, pad1, bufsize, pad2, row_size, final_size));
+	DEBUGMSG(DBG_ORDERS, (L"BMPCACHE(cx=%d,cy=%d,id=%d,idx=%d,bpp=%d,size=%d,pad1=%d,bufsize=%d,pad2=%d,rs=%d,fs=%d)\n", width, height, cache_id, cache_idx, bpp, size, pad1, bufsize, pad2, row_size, final_size));
 
 	bmpdata = (uint8 *) xmalloc(width * height * Bpp);
 
@@ -953,7 +953,7 @@ process_bmpcache(STREAM s)
 	}
 	else
 	{
-		DEBUG(("Failed to decompress bitmap data\n"));
+		DEBUGMSG(DBG_ORDERS, (L"Failed to decompress bitmap data\n"));
 	}
 
 	xfree(bmpdata);
@@ -1001,7 +1001,7 @@ process_bmpcache2(STREAM s, uint16 flags, BOOL compressed)
 
 	in_uint8p(s, data, bufsize);
 
-	DEBUG(("BMPCACHE2(compr=%d,flags=%x,cx=%d,cy=%d,id=%d,idx=%d,Bpp=%d,bs=%d)\n",
+	DEBUGMSG(DBG_ORDERS, (L"BMPCACHE2(compr=%d,flags=%x,cx=%d,cy=%d,id=%d,idx=%d,Bpp=%d,bs=%d)\n",
 	       compressed, flags, width, height, cache_id, cache_idx, Bpp, bufsize));
 
 	bmpdata = (uint8 *) xmalloc(width * height * Bpp);
@@ -1010,7 +1010,7 @@ process_bmpcache2(STREAM s, uint16 flags, BOOL compressed)
 	{
 		if (!bitmap_decompress(bmpdata, width, height, data, bufsize, Bpp))
 		{
-			DEBUG(("Failed to decompress bitmap data\n"));
+			DEBUGMSG(DBG_ORDERS, (L"Failed to decompress bitmap data\n"));
 			xfree(bmpdata);
 			return;
 		}
@@ -1033,7 +1033,7 @@ process_bmpcache2(STREAM s, uint16 flags, BOOL compressed)
 	}
 	else
 	{
-		DEBUG(("process_bmpcache2: ui_create_bitmap failed\n"));
+		DEBUGMSG(DBG_ORDERS, (L"process_bmpcache2: ui_create_bitmap failed\n"));
 	}
 
 	xfree(bmpdata);
@@ -1063,7 +1063,7 @@ process_colcache(STREAM s)
 		in_uint8s(s, 1);	/* pad */
 	}
 
-	DEBUG(("COLCACHE(id=%d,n=%d)\n", cache_id, map.ncolours));
+	DEBUGMSG(DBG_ORDERS, (L"COLCACHE(id=%d,n=%d)\n", cache_id, map.ncolours));
 
 	hmap = ui_create_colourmap(&map);
 
@@ -1086,7 +1086,7 @@ process_fontcache(STREAM s)
 	in_uint8(s, font);
 	in_uint8(s, nglyphs);
 
-	DEBUG(("FONTCACHE(font=%d,n=%d)\n", font, nglyphs));
+	DEBUGMSG(DBG_ORDERS, (L"FONTCACHE(font=%d,n=%d)\n", font, nglyphs));
 
 	for (i = 0; i < nglyphs; i++)
 	{

@@ -191,7 +191,7 @@ sec_generate_keys(uint8 * client_random, uint8 * server_random, int rc4_key_size
 
 	if (rc4_key_size == 1)
 	{
-		DEBUG(("40-bit encryption enabled\n"));
+		DEBUGMSG(DBG_SEC, (L"40-bit encryption enabled\n"));
 		sec_make_40bit(sec_sign_key);
 		sec_make_40bit(sec_decrypt_key);
 		sec_make_40bit(sec_encrypt_key);
@@ -199,7 +199,7 @@ sec_generate_keys(uint8 * client_random, uint8 * server_random, int rc4_key_size
 	}
 	else
 	{
-		DEBUG(("rc_4_key_size == %d, 128-bit encryption enabled\n", rc4_key_size));
+		DEBUGMSG(DBG_SEC, (L"rc_4_key_size == %d, 128-bit encryption enabled\n", rc4_key_size));
 		rc4_key_len = 16;
 	}
 
@@ -422,7 +422,7 @@ sec_send_to_channel(STREAM s, uint32 flags, uint16 channel)
 		datalen = s->end - s->p - 8;
 
 #ifdef WITH_DEBUG
-		DEBUG(("Sending encrypted packet:\n"));
+		DEBUGMSG(DBG_SEC, (L"Sending encrypted packet:\n"));
 		hexdump(s->p + 8, datalen);
 #endif
 
@@ -753,11 +753,11 @@ sec_process_crypt_info(STREAM s)
 
 	if (!sec_parse_crypt_info(s, &rc4_key_size, &server_random, &modulus, &exponent))
 	{
-		DEBUG(("Failed to parse crypt info\n"));
+		DEBUGMSG(DBG_SEC, (L"Failed to parse crypt info\n"));
 		return;
 	}
 
-	DEBUG(("Generating client random\n"));
+	DEBUGMSG(DBG_SEC, (L"Generating client random\n"));
 	/* Generate a client random, and hence determine encryption keys */
 	/* This is what the MS client do: */
 	memset(inr, 0, SEC_RANDOM_SIZE);

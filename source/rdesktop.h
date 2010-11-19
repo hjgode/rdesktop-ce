@@ -40,10 +40,20 @@
 
 #define VERSION "1.4.1"
 
+//my debugging flags
+
+#define DBG_ORDERS 0 //1=enable debugmsg from inside orders.c
+#define DBG_RDP 0    //1=enable debugmsg for rdp.c
+#define DBG_SEC 0	 //1=enable debugmsg for secure.c
+#define DBG_W32 0	 //1=enable debugmsg for win32.c	
+#define DBK_KEY 0	 //1=enable debugmsg for keyboard debugging in win32.c	
+#define DBG_UIM 0	 //1=enable debugmsg for uimain.c	
+#define DBG_SCAN 0	 //1=enable debugmsg for scanner data
+
 #ifdef WITH_DEBUG
 #define DEBUG(args)	printf args;
 #else
-#define DEBUG(args)
+#define DEBUG(args) DEBUGMSG(1,(args))
 #endif
 
 #ifdef WITH_DEBUG_KBD

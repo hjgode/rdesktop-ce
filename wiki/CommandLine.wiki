@@ -1,0 +1,16 @@
+#summary The command line options
+#labels Featured
+
+=command line options==
+
+
+
+WinRDesktop `[`-g widthxheight`]` `[`-t port`]` `[`-a bpp`]` 
+
+    `[`-f`]` `[`-u username`]` `[`-p password`]` `[`-d domain`]`
+
+    `[`-s shell`]` `[`-c working directory`]` `[`-n host name`]`
+
+    server-name-or-ip
+
+see also winrdesktopini

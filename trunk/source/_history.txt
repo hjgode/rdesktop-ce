@@ -1,0 +1,48 @@
+WinRdesktop
+
+A free rdp client for Windows Mobile
+
+Usage:
+  WinRDesktop - an RDP client based on rdesktop
+  You can't run this application without correct parameters
+  
+  command line options
+  
+  WinRDesktop [-g widthxheight] [-t port] [-a bpp]
+      [-u username] [-p password] [-d domain]
+      [-s shell] [-n host name]
+      server-name-or-ip
+  
+  not supported: [-c working directory], [-f]  
+  
+  You can use a config file in the current or root directory
+  called WinRDesktop.ini
+  The file should look like this:
+  
+  [main]
+  server=192.168.1.1
+  port=3389
+  username=user1
+  password=password1
+  bpp=8/15/16
+  geometry=800x600
+
+===============================================================
+2009
+	dec
+		01
+			fullscreen (-f) currently not supported, does not make sense
+			
+			VK_CAPITAL only applied to letters not to numbers
+			Only letters (A-z) and digits (0-9) work on default SIP
+			Shifted standard SIP is also OK
+			in Number SIP chars are mixed up
+			
+			WM_CHAR not supported, need KEY_UP/KEY_DOWN
+			
+			added code to allow only one instance!
+	dec
+		15
+			added barcode reader code
+			added getTime function
+			

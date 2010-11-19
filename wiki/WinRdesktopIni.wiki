@@ -1,4 +1,5 @@
 #summary Using an ini file to control rdesktop-ce
+#labels Featured
 
 = The ini file explained =
 

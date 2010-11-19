@@ -914,7 +914,7 @@ ui_key_up(int key, int ext)
 int
 ui_read_wire(void)
 {
-	OutputDebugString("ui_read_wire!");
+	DEBUGMSG(DBG_UIM, (L"ui_read_wire!"));
 	return rdp_loop(&g_deactivated, &g_ext_disc_reason);
 }
 
@@ -925,6 +925,7 @@ int
 ui_main(void)
 {
   uint32 flags;
+	BOOL bInitClip=FALSE;
 
   /* try to connect */
   flags = RDP_LOGON_NORMAL;
@@ -939,11 +940,16 @@ ui_main(void)
   }
   /* init backingstore */
   bs_init(g_width, g_height, g_server_depth);
+  
   /* create the window */
   if (!mi_create_window())
   {
     return 0;
   }
+
+  /* Init Clipboard ??? */
+  //cliprdr_init();
+  
   /* if all ok, enter main loop */
   return mi_main_loop();
 }

@@ -122,7 +122,7 @@ rdp_recv(uint8 * type)
 	*type = pdu_type & 0xf;
 
 #ifdef WITH_DEBUG
-	DEBUG(("RDP packet #%d, (type %x)\n", ++g_packetno, *type));
+	DEBUGMSG(DBG_RDP, (L"RDP packet #%d, (type %x)\n", ++g_packetno, *type));
 	hexdump(g_next_packet, length);
 #endif /*  */
 
@@ -476,6 +476,13 @@ rdp_send_synchronise(void)
 	rdp_send_data(s, RDP_DATA_PDU_SYNCHRONISE);
 }
 
+//simulate a time code //HGO
+static uint32 getTime(){
+	static uint32 iTime = 0;
+	if(iTime > 0xFFFFFF)
+		iTime=0;
+	return ++iTime;
+}
 /* Send a single input event */
 void
 rdp_send_input(uint32 time, uint16 message_type, uint16 device_flags, uint16 param1, uint16 param2)
@@ -487,7 +494,7 @@ rdp_send_input(uint32 time, uint16 message_type, uint16 device_flags, uint16 par
 	out_uint16_le(s, 1);	/* number of events */
 	out_uint16(s, 0);	/* pad */
 
-	out_uint32_le(s, time);
+	out_uint32_le(s, getTime()); //HGO  time);
 	out_uint16_le(s, message_type);
 	out_uint16_le(s, device_flags);
 	out_uint16_le(s, param1);
@@ -891,7 +898,7 @@ rdp_process_bitmap_caps(STREAM s)
 	in_uint16_le(s, width);
 	in_uint16_le(s, height);
 
-	DEBUG(("setting desktop size and depth to: %dx%dx%d\n", width, height, depth));
+	DEBUGMSG(DBG_RDP, (L"setting desktop size and depth to: %dx%dx%d\n", width, height, depth));
 
 	/*
 	 * The server may limit depth and change the size of the desktop (for
@@ -963,7 +970,7 @@ process_demand_active(STREAM s)
 	in_uint16_le(s, len_combined_caps);
 	in_uint8s(s, len_src_descriptor);
 
-	DEBUG(("DEMAND_ACTIVE(id=0x%x)\n", g_rdp_shareid));
+	DEBUGMSG(DBG_RDP, (L"DEMAND_ACTIVE(id=0x%x)\n", g_rdp_shareid));
 	rdp_process_server_caps(s, len_combined_caps);
 
 	rdp_send_confirm_active();
@@ -1104,7 +1111,7 @@ process_bitmap_updates(STREAM s)
 		cx = right - left + 1;
 		cy = bottom - top + 1;
 
-		DEBUG(("BITMAP_UPDATE(l=%d,t=%d,r=%d,b=%d,w=%d,h=%d,Bpp=%d,cmp=%d)\n",
+		DEBUGMSG(DBG_RDP, (L"BITMAP_UPDATE(l=%d,t=%d,r=%d,b=%d,w=%d,h=%d,Bpp=%d,cmp=%d)\n",
 		       left, top, right, bottom, width, height, Bpp, compress));
 
 		if (!compress)
@@ -1162,7 +1169,7 @@ process_palette(STREAM s)
 
 	map.colours = (COLOURENTRY *) xmalloc(sizeof(COLOURENTRY) * map.ncolours);
 
-	DEBUG(("PALETTE(c=%d)\n", map.ncolours));
+	DEBUGMSG(DBG_RDP, (L"PALETTE(c=%d)\n", map.ncolours));
 
 	for (i = 0; i < map.ncolours; i++)
 	{
@@ -1219,7 +1226,7 @@ process_disconnect_pdu(STREAM s, uint32 * ext_disc_reason)
 {
 	in_uint32_le(s, *ext_disc_reason);
 
-	DEBUG(("Received disconnect PDU\n"));
+	DEBUGMSG(DBG_RDP, (L"Received disconnect PDU\n"));
 }
 
 /* Process data PDU */
@@ -1271,11 +1278,11 @@ process_data_pdu(STREAM s, uint32 * ext_disc_reason)
 			break;
 
 		case RDP_DATA_PDU_CONTROL:
-			DEBUG(("Received Control PDU\n"));
+			DEBUGMSG(DBG_RDP, (L"Received Control PDU\n"));
 			break;
 
 		case RDP_DATA_PDU_SYNCHRONISE:
-			DEBUG(("Received Sync PDU\n"));
+			DEBUGMSG(DBG_RDP, (L"Received Sync PDU\n"));
 			break;
 
 		case RDP_DATA_PDU_POINTER:
@@ -1287,7 +1294,7 @@ process_data_pdu(STREAM s, uint32 * ext_disc_reason)
 			break;
 
 		case RDP_DATA_PDU_LOGON:
-			DEBUG(("Received Logon PDU\n"));
+			DEBUGMSG(DBG_RDP, (L"Received Logon PDU\n"));
 			/* User logged on */
 			break;
 
@@ -1379,7 +1386,7 @@ rdp_loop(BOOL * deactivated, uint32 * ext_disc_reason)
 				*deactivated = False;
 				break;
 			case RDP_PDU_DEACTIVATE:
-				DEBUG(("RDP_PDU_DEACTIVATE\n"));
+				DEBUGMSG(DBG_RDP, (L"RDP_PDU_DEACTIVATE\n"));
 				*deactivated = True;
 				break;
 			case RDP_PDU_REDIRECT:

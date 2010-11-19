@@ -31,6 +31,8 @@ static int g_height = 600;
 static int g_bpp = 8;
 static int g_Bpp = 1;
 
+//static BOOL g_rdpclip = TRUE;
+
 static int g_clip_left = 0;
 static int g_clip_top = 0;
 static int g_clip_right = 800;

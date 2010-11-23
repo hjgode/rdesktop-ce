@@ -45,4 +45,15 @@ Usage:
 		15
 			added barcode reader code
 			added getTime function
+2010
+	nov
+		23
+			fullscreen implemented this way:
+			use geometry=240x320 and fullscreen on a QVGA device and you will get a fullscreen 
+			window without scrollbars
+			if geometry is larger than device screen, you will get scrollbars but there is no
+			window caption and no menubar (what I call fullscreen).
+			
+			To exit rdesktop in full screen mode double click in the middle of the top (imaginary)
+			caption and you will be asked for exit.
 			

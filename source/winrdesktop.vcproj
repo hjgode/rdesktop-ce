@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="Windows-1252"?>
+<?xml version="1.0" encoding="gb2312"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
@@ -2012,6 +2012,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
 				Optimization="0"
 				PreprocessorDefinitions="DEBUG;ARM;_ARM_;ARMV4I;UNDER_CE=$(CEVER);_WIN32_WCE=$(CEVER);$(CePlatform);UNICODE"
 				RuntimeLibrary="1"
@@ -13843,6 +13844,11 @@
 		</Filter>
 		<File
 			RelativePath=".\_history.txt"
+			>
+		</File>
+		<File
+			RelativePath=".\winrdesktop.ini"
+			DeploymentContent="true"
 			>
 		</File>
 	</Files>

@@ -1,9 +1,9 @@
 #labels Featured
-#How fullscreen is used
+#Summary How fullscreen is used
 
 = Running rdesktop-ce in fullscreen mode =
 
-http://code.google.com/p/rdesktop-ce/wiki/ScreenShotFullscreen.gif
+http://code.google.com/p/rdesktop-ce/wiki/ScreenShotFullscreen.gif Fullscreen
 
 Per default rdesktopce runs in a window without title bar and a simple menu bar with an option to exit rdesktopce. If fullscreen is enabled (fullscreen enty is in winrdesktop.Ini, see WinRdesktopIni) or the program is started with option '-f' (see CommandLine), the program will not display a menu bar at all. The whole screen of the windows mobile device is then occupied by the remote desktop / terminal server window.
 

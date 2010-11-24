@@ -71,7 +71,8 @@ pstcache_load_bitmap(uint8 cache_id, uint16 cache_idx)
 	rd_read_file(fd, celldata, cellhdr.length);
 
 	bitmap = ui_create_bitmap(cellhdr.width, cellhdr.height, celldata);
-	DEBUG(("Load bitmap from disk: id=%d, idx=%d, bmp=0x%x)\n", cache_id, cache_idx, bitmap));
+//	DEBUGSTR(("Load bitmap from disk: id=%d, idx=%d, bmp=0x%x)\n", cache_id, cache_idx, bitmap));
+	DEBUGMSG(DBG_TEST, (L"Load bitmap from disk: id=%d, idx=%d, bmp=0x%x)\n", cache_id, cache_idx, bitmap));
 	cache_put_bitmap(cache_id, cache_idx, bitmap);
 
 	xfree(celldata);
@@ -176,13 +177,15 @@ pstcache_init(uint8 cache_id)
 
 	if (!rd_pstcache_mkdir())
 	{
-		DEBUG(("failed to get/make cache directory!\n"));
+		//DEBUGSTR(("failed to get/make cache directory!\n"));
+		DEBUGMSG(DBG_TEST, (L"failed to get/make cache directory!\n"));
 		return False;
 	}
 
 	g_pstcache_Bpp = (g_server_depth + 7) / 8;
 	sprintf(filename, "cache/pstcache_%d_%d", cache_id, g_pstcache_Bpp);
-	DEBUG(("persistent bitmap cache file: %s\n", filename));
+	//DEBUGSTR(("persistent bitmap cache file: %s\n", filename));
+	DEBUGMSG(DBG_TEST, (L"persistent bitmap cache file: %s\n", filename));
 
 	fd = rd_open_file(filename);
 	if (fd == -1)

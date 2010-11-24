@@ -49,11 +49,12 @@
 #define DBK_KEY 0	 //1=enable debugmsg for keyboard debugging in win32.c	
 #define DBG_UIM 0	 //1=enable debugmsg for uimain.c	
 #define DBG_SCAN 0	 //1=enable debugmsg for scanner data
+#define DBG_TEST 1	 //1=enable debugmsg for testing
 
 #ifdef WITH_DEBUG
 #define DEBUG(args)	printf args;
 #else
-#define DEBUG(args) DEBUGMSG(1,(args))
+#define DEBUGSTR(args) DEBUGMSG(1,(args))
 #endif
 
 #ifdef WITH_DEBUG_KBD

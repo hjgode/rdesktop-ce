@@ -1,6 +1,8 @@
 #summary Using an ini file to control rdesktop-ce
 #labels Featured
 
+https://rdesktop-ce.googlecode.com/svn/wiki/ScreenShot01.gif
+
 = The ini file explained =
 
 You can start a terminal server connection by starting winrdesktop.exe with a number of arguments (CommandLine) or by providing an ini file with the connection settings.

@@ -57,3 +57,8 @@ Usage:
 			To exit rdesktop in full screen mode double click in the middle of the top (imaginary)
 			caption and you will be asked for exit.
 			
+2010
+	nov
+		24
+			Added CEUX HI_RES_AWARE resource for non-QVGA
+			

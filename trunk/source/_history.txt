@@ -61,4 +61,10 @@ Usage:
 	nov
 		24
 			Added CEUX HI_RES_AWARE resource for non-QVGA
+
+2010
+	dec
+		16
+			changed SendKeys(":ART\r");  inside WndProc (win32.c) for WM_HAVE_SCAN to SendKeys("\r");
+			This code line sends a return code after sending barcode received data and is known as Postamble
 			

@@ -5,6 +5,9 @@
 #ifndef _SCANMAPH_
 #define _SCANMAPH_
 
+//use the follwoing to exchange z<->y handling
+#define QWERTY
+
 typedef struct {
 	TCHAR*	meaning;
 	byte	vkCode;
@@ -118,8 +121,13 @@ const scancodestable myScancodeTable[]={
 	{ L"v", 	0x56, 	0xc02f0001, 	0x002f , TRUE }, 
 	{ L"w", 	0x57, 	0xc0110001, 	0x0011 , TRUE }, 
 	{ L"x", 	0x58, 	0xc02d0001, 	0x002d , TRUE }, 
+#ifdef QWERTY
+	{ L"y", 	0x59, 	0xc0150001, 	0x0015 , TRUE }, 
+	{ L"z", 	0x5a, 	0xc02c0001, 	0x002c , TRUE }, 
+#else
 	{ L"y", 	0x59, 	0xc02c0001, 	0x002c , TRUE }, 
 	{ L"z", 	0x5a, 	0xc0150001, 	0x0015 , TRUE }, 
+#endif
 	{ L"lWin", 	0x5b, 	0xc15b0001, 	0x005b , FALSE }, 
 	{ L"rWin", 	0x5c, 	0xc15c0001, 	0x005c , FALSE }, 
 	{ L"prop", 	0x5d, 	0xc15d0001, 	0x005d , FALSE }, 

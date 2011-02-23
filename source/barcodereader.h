@@ -6,6 +6,8 @@
 #include <windows.h>
 #include <winbase.h>
 
+//see C:\Program Files\Intermec\Developer Library\Include
+//and C:\Program Files\Intermec\Developer Library\Lib
 #include "itcScan.h"
 #pragma comment (lib, "ITCscan.lib")
 

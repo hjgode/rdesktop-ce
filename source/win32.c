@@ -54,6 +54,8 @@ extern int WSAAsyncSelect(
 	#include "barcodereader.h"
 	#include "keymap.h"
 #endif
+//wait cursor on startup
+HCURSOR hCurs1;
 
 extern char g_username[];
 extern char g_hostname[];
@@ -1167,7 +1169,7 @@ LRESULT CALLBACK
 WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	char* cStr;
-	TCHAR* wStr;
+//	TCHAR* wStr;
   switch (message)
   {
 #ifdef USE_SCANNER
@@ -1985,6 +1987,9 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     WSACleanup();
     return 0;
   }
+  hCurs1 = LoadCursor(NULL, IDC_WAIT);
+  if(hCurs1!=INVALID_HANDLE_VALUE)
+	SetCursor(hCurs1);
   return ui_main();
 }
 #endif /* WITH_DEBUG */

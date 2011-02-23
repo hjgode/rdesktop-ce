@@ -7,6 +7,7 @@
 
 //use the follwoing to exchange z<->y handling
 #define QWERTY
+//#undef QWERTY
 
 typedef struct {
 	TCHAR*	meaning;

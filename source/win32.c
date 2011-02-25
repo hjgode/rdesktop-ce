@@ -24,7 +24,7 @@
 
 //use barcode scanner code?
 #define USE_SCANNER
-//#undef USE_SCANNER
+#undef USE_SCANNER
 
 int MENU_HEIGHT=26; //was a #define
 
@@ -52,8 +52,8 @@ extern int WSAAsyncSelect(
 
 #ifdef USE_SCANNER
 	#include "barcodereader.h"
-	#include "keymap.h"
 #endif
+	#include "keymap.h"
 //wait cursor on startup
 HCURSOR hCurs1;
 

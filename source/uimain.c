@@ -949,7 +949,7 @@ ui_main(void)
 
   /* Init Clipboard ??? */
   //cliprdr_init();
-  SetCursor(IDC_NO); //reset waitcursor set in WinMain
+  SetCursor((HCURSOR)IDC_NO); //reset waitcursor set in WinMain
   /* if all ok, enter main loop */
   return mi_main_loop();
 }

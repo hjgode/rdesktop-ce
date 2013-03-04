@@ -552,15 +552,47 @@ handle_WM_LBUTTONDBLCLK(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	WORD xPos = LOWORD(lParam); 
 	WORD yPos = HIWORD(lParam);
-//  g_mousex = LOWORD(lParam);
-//  g_mousey = HIWORD(lParam);
+    g_mousex = LOWORD(lParam);
+    g_mousey = HIWORD(lParam);
 	if((xPos < g_screen_width/2 + 10) && (xPos > g_screen_width/2 -10)){
 		if(yPos < 20){
 			if (MessageBox(hWnd, L"Exit?", L"rdesktop", MB_YESNO | MB_SETFOREGROUND | MB_TOPMOST)==IDYES)
 				PostQuitMessage(-99);
 		}
 	}
-  //ui_mouse_button(1, g_mousex + g_xscroll, g_mousey + g_yscroll, 0);
+
+	/*
+	wParam
+    Indicates whether various virtual keys are down. This parameter can be one or more of the following values.
+    Value				Meaning
+    MK_CONTROL	0x0008	The CTRL key is down.
+    MK_LBUTTON	0x0001	The left mouse button is down.
+    MK_MBUTTON	0x0010	The middle mouse button is down.
+    MK_RBUTTON	0x0002	The right mouse button is down.
+    MK_SHIFT	0x0004	The SHIFT key is down.
+    MK_XBUTTON1	0x0020	The first X button is down.
+    MK_XBUTTON2	0x0040	The second X button is down.
+
+	lParam
+		The low-order word specifies the x-coordinate of the cursor. The coordinate is relative to the upper-left corner of the client area.
+		The high-order word specifies the y-coordinate of the cursor. The coordinate is relative to the upper-left corner of the client area.
+	xPos = GET_X_LPARAM(lParam); 
+	yPos = GET_Y_LPARAM(lParam);
+	*/
+
+	//simulate a WM_LBUTTONDBLCLK by fast sending down/up+Down/up
+	//mouse down
+	ui_mouse_button(1, g_mousex + g_xscroll, g_mousey + g_yscroll, 1);
+	Sleep(0);
+	//mouse up
+	ui_mouse_button(1, g_mousex + g_xscroll, g_mousey + g_yscroll, 0);
+	Sleep(0);
+	//mouse down
+	ui_mouse_button(1, g_mousex + g_xscroll, g_mousey + g_yscroll, 1);
+	Sleep(0);
+	//mouse up
+	ui_mouse_button(1, g_mousex + g_xscroll, g_mousey + g_yscroll, 1);
+
   return 0;
 }
 

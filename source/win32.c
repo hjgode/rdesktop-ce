@@ -591,7 +591,7 @@ handle_WM_LBUTTONDBLCLK(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	ui_mouse_button(1, g_mousex + g_xscroll, g_mousey + g_yscroll, 1);
 	Sleep(0);
 	//mouse up
-	ui_mouse_button(1, g_mousex + g_xscroll, g_mousey + g_yscroll, 1);
+	ui_mouse_button(1, g_mousex + g_xscroll, g_mousey + g_yscroll, 0);
 
   return 0;
 }

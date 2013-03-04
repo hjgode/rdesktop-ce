@@ -48,8 +48,8 @@
 #define DBG_SEC 1	 //1=enable debugmsg for secure.c
 #define DBG_LIC 1    //1=enable debugmsg for license.c
 #define DBG_W32 1	 //1=enable debugmsg for win32.c	
-#define DBK_KEY 0	 //1=enable debugmsg for keyboard debugging in win32.c	
-#define DBG_UIM 0	 //1=enable debugmsg for uimain.c	
+#define DBK_KEY 1	 //1=enable debugmsg for keyboard debugging in win32.c	
+#define DBG_UIM 1	 //1=enable debugmsg for uimain.c	
 #define DBG_SCAN 0	 //1=enable debugmsg for scanner data
 #define DBG_TEST 0	 //1=enable debugmsg for testing
 

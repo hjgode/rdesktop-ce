@@ -22,127 +22,9 @@
 #define MYWINCE
 #endif
 
-//remove this, if not compiling for Windows Mobile
-#define POCKET_PC
-
-#ifdef POCKET_PC
-typedef enum tagSHUIINFOTYPE
-{
-    SHUI_INVALID = 0,           // illegal
-
-// What kind of deivce are we, anyway?
-
-    SHUI_PLATFORMTYPE,      // See enum below
-
-// Font metric items for backwards compatibility
-
-    SHUI_BANNERFONTHEIGHT,      // banner font size
-    SHUI_DATAFONTHEIGHT,        // data font size,
-    SHUI_LABELFONTHEIGHT,       // label font size
-    
-// UI Element items
-
-    SHUI_MENUBARHEIGHT,            // Menu bar height
-    SHUI_TASKBARHEIGHT,         // Taskbar height
-    SHUI_CHECKBOXHEIGHT,        // Height of a check box
-    SHUI_CHECKBOXWIDTH,         // Width of a check box
-    SHUI_RADIOBUTTONHEIGHT,     // Height of a radio button
-    SHUI_RADIOBUTTONWIDTH,      // Width of a radio button
-    SHUI_APPBARHEIGHT,          // Application Bar height
-
-// These should be contiguous, these are cached system metrics
-    SHUI_SM_CACHE_FIRST,
-    SHUI_SM_CXBORDER = SHUI_SM_CACHE_FIRST, 
-    SHUI_SM_CXICON,                         
-    SHUI_SM_CYICON,                         
-    SHUI_SM_CXSMICON,           
-    SHUI_SM_CYSMICON,
-    SHUI_SM_CACHE_LAST = SHUI_SM_CYSMICON,
-
-// Fonts available to the font manager -- External IDs
-
-    SHUI_FM_LISTUITEXT,
-    SHUI_FM_LISTUIBOLDTEXT,
-    SHUI_FM_LISTUILABEL,
-    SHUI_FM_LISTUILINKTEXT,
-    SHUI_FM_APPLIST,
-    SHUI_FM_APPNORMAL,
-    SHUI_FM_APPREASON,
-    SHUI_FM_DIALERDIRECT,
-    SHUI_FM_DIALERDIRECT_LARGE,
-    SHUI_FM_DIALERDIRECT_MEDIUM,
-    SHUI_FM_DIALERDIRECT_SMALL,
-    SHUI_FM_RINGERCALLER,
-    SHUI_FM_RINGERINFO,
-    SHUI_FM_CONTACTSMESSAGE,
-    SHUI_FM_SOFTKEY,
-    SHUI_FM_CPROG_ALERT_HEADER,
-    SHUI_FM_CPROG_ALERT_NAME,
-    SHUI_FM_CPROG_ALERT_NAME_SM,
-    SHUI_FM_CPROG_ALERT_NUMBER,
-    SHUI_FM_CPROG_ALERT_LINE_ID,
-    SHUI_FM_SHBOX_HEADING,
-    SHUI_FM_SHBOX_HEADING_SMALL,
-    SHUI_FM_VOLDLG_LABEL,
-    SHUI_FM_CPROG_METHOD,
-    SHUI_FM_CPROG_CALL_STATUS,
-    SHUI_FM_CPROG_ACCUMULATOR,
-    SHUI_FM_CPROG_SINGLE_CALL_NAME,
-    SHUI_FM_CPROG_SINGLE_CALL_NAME_SM,
-    SHUI_FM_CPROG_SINGLE_CALL_DURATION,
-    SHUI_FM_CPROG_MULTI_CALL_NAME,
-    SHUI_FM_MAIL_BOLD,
-    SHUI_FM_NOTES_BOLD,
-
-// Fonts available to the font manager -- Internal IDs
-
-    SHUI_IDFONTSYSTEM,
-    SHUI_IDFONTDIALINGSMALL,
-    SHUI_IDFONTDIALINGMEDIUM,
-    SHUI_IDFONTDIALINGLARGE,
-    SHUI_IDFONTSOFTKEY,
-    SHUI_IDFONTTITLE1,
-    SHUI_IDFONTTITLE2,
-    SHUI_IDFONTTITLE3,
-    SHUI_IDFONTTITLE4,
-    SHUI_IDFONTTITLE5,
-    SHUI_IDFONTTITLE6,
-    SHUI_IDFONTLISTUITEXT,
-    SHUI_IDFONTLISTUIBOLDTEXT,
-    SHUI_IDFONTNORMALTEXT,
-    SHUI_IDFONTMEDIUMTEXT,
-    SHUI_IDFONTLARGETEXT,
-    SHUI_IDFONTSMALLBOLDTEXT,
-    SHUI_IDFONTNORMALBOLDTEXT,
-    SHUI_IDFONTMEDIUMBOLDTEXT,
-    SHUI_IDFONTLARGEBOLDTEXT,
-    SHUI_IDFONTSMALLEXTRABOLDTEXT,
-    SHUI_IDFONTNORMALEXTRABOLDTEXT,
-    SHUI_IDFONTMEDIUMEXTRABOLDTEXT,
-    SHUI_IDFONTLARGEEXTRABOLDTEXT,
-    SHUI_IDFONTSMALLHEAVYTEXT,
-    SHUI_IDFONTNORMALHEAVYTEXT,
-    SHUI_IDFONTMEDIUMHEAVYTEXT,
-    SHUI_IDFONTLARGEHEAVYTEXT,
-    SHUI_IDFONTLISTUIUNDERLINETEXT,
-    SHUI_IDFONTSMALLUNDERLINETEXT,
-    SHUI_IDFONTNORMALUNDERLINETEXT,
-    SHUI_IDFONTMEDIUMUNDERLINETEXT,
-    SHUI_IDFONTLARGEUNDERLINETEXT,
-    SHUI_IDFONTSMALLBOLDUNDERLINETEXT,
-    SHUI_IDFONTNORMALBOLDUNDERLINETEXT,
-    SHUI_IDFONTMEDIUMBOLDUNDERLINETEXT,
-    SHUI_IDFONTLARGEBOLDUNDERLINETEXT,
-
-    // Application font size
-    SHUI_APPLICATIONFONTHEIGHT,
-} SHUIINFOTYPE, *PSHUIINFOTYPE;
-int SHGetMetric(SHUIINFOTYPE shuiFlags);
-#endif
-
 //use barcode scanner code?
 #define USE_SCANNER
-//#undef USE_SCANNER
+#undef USE_SCANNER
 
 int MENU_HEIGHT=26; //was a #define
 
@@ -175,8 +57,8 @@ extern int WSAAsyncSelect(
 //wait cursor on startup
 HCURSOR hCurs1;
 
-extern char g_username[];
-extern char g_hostname[];
+extern char *g_username;
+extern char g_hostname[16];
 extern char g_servername[];
 extern char g_password[];
 extern char g_shell[];
@@ -797,8 +679,8 @@ static LRESULT handle_WM_CHAR(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 
 	ext &= 0x0100;
 
-		ui_key_down(scancode, ext);
-		ui_key_up(scancode, ext);
+		//ui_key_down(scancode, ext);
+		//ui_key_up(scancode, ext);
 
 	return TRUE;
 }
@@ -1287,12 +1169,7 @@ LRESULT CALLBACK
 WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	char* cStr;
-#ifdef USE_SCANNER
-	#ifdef DEBUG
-		TCHAR* wStr;
-	#endif
-#endif
-
+//	TCHAR* wStr;
   switch (message)
   {
 #ifdef USE_SCANNER
@@ -1304,10 +1181,9 @@ WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_HAVE_SCAN:
 		// here is the scanned data
-		cStr=(char*)malloc(gOneScan.dwBytesReturned);
+		cStr=(char*)malloc(gOneScan.dwBytesReturned+1);
 #ifdef DEBUG
 		wStr=(TCHAR*)malloc(gOneScan.dwBytesReturned*2 + 2);
-		memset(wStr,0,sizeof(TCHAR)*(gOneScan.dwBytesReturned*2 + 2));
 #endif
 		strncpy(cStr, gOneScan.rgbDataBuffer, gOneScan.dwBytesReturned);
 		strcat(cStr, "\0");
@@ -1455,10 +1331,8 @@ mi_create_window(void)
   int w;
   int h;
   int winBorder;
-  int taskbarHeight;
   BOOL iRet;
 	HWND tHwnd=0;
-	HMENU hMenu=NULL;
 
   if (g_Wnd != 0 || g_Instance != 0)
   {
@@ -1504,16 +1378,7 @@ mi_create_window(void)
   w = rc.right - rc.left;
   MENU_HEIGHT=GetSystemMetrics(SM_CYMENU); //says 23, should be 26
   winBorder = GetSystemMetrics(SM_CYBORDER); //says 1
-
-#ifdef POCKET_PC
-	hMenu = LoadMenu(g_Instance, MAKEINTRESOURCE(IDR_MENU1));
-  //Windows Mobile only:
-	//titlebar height
-	taskbarHeight = SHGetMetric(SHUI_TASKBARHEIGHT);
-	//menu bar height
-	MENU_HEIGHT = SHGetMetric(SHUI_MENUBARHEIGHT);
-#endif
-
+	
   if(g_fullscreen)
 	{
 		MENU_HEIGHT=0;
@@ -1532,7 +1397,7 @@ mi_create_window(void)
 
   g_Wnd = CreateWindow(wc.lpszClassName, caption,
                        style, x, y, w, h,
-                       (HWND) NULL, hMenu, g_Instance,
+                       (HWND) NULL, (HMENU) NULL, g_Instance,
                        (LPVOID) NULL);
   wsprintf(str, L"\n#### Window handle is 0x%0x\n", g_Wnd);
   DEBUGMSG(DBG_W32, (str));
@@ -1783,7 +1648,9 @@ mi_process_a_param(char * param1, int state)
     if (state == 5) /* -u */
     {
       state = 0;
-      strcpy(g_username, param1);
+      //strcpy(g_username, param1);
+	  g_username = (char *) malloc(strlen(param1) + 1);
+	  STRNCPY(g_username, param1, strlen(param1) + 1);
     }
     if (state == 6) /* -p */
     {
@@ -1982,8 +1849,8 @@ mi_process_cl(LPTSTR lpCmdLine)
   int i1;
   int state;
 
-  strcpy(g_hostname, "test");
-  strcpy(g_username, "pda");
+//  strcpy(g_hostname, "test");
+//  strcpy(g_username, "pda");
   /* get username and convert it from unicode */
   size = 255;
 #ifndef MYWINCE

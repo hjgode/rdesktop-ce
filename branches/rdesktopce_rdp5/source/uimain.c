@@ -21,10 +21,10 @@
 #include "rdesktop.h"
 #include "bsops.h"
 
-char g_username[256] = "";
+char *g_username;
 char g_hostname[256] = "";
 char g_servername[256] = "";
-char g_password[256] = "";
+char g_password[64] = "";
 char g_shell[256] = "";
 char g_directory[256] = "";
 char g_domain[256] = "";
@@ -38,7 +38,7 @@ BOOL g_bitmap_cache_precache = True;
 BOOL g_bitmap_cache = True;
 BOOL g_encryption = True;
 int g_server_depth = 8;
-BOOL g_use_rdp5 = False;
+BOOL g_use_rdp5 = True;
 int g_width = 800;
 int g_height = 600;
 uint32 g_keylayout = 0x409; /* Defaults to US keyboard layout */
@@ -58,6 +58,7 @@ char g_redirect_domain[16];
 char g_redirect_password[64];
 char g_redirect_username[64];
 char g_redirect_cookie[128];
+uint32 g_redirect_cookie_len = 0;
 uint32 g_redirect_flags = 0;
 
 extern int g_tcp_port_rdp;
@@ -151,7 +152,7 @@ ui_select(int in)
 void *
 ui_create_cursor(uint32 x, uint32 y,
                  int width, int height,
-                 uint8 * andmask, uint8 * xormask)
+                 uint8 * andmask, uint8 * xormask, int bpp)
 {
   int i;
   int j;
@@ -641,15 +642,15 @@ ui_end_update(void)
 
 /*****************************************************************************/
 void
-ui_polygon(uint8 opcode, uint8 fillmode, POINT * point, int npoints,
-           BRUSH * brush, int bgcolour, int fgcolour)
+ui_polygon(uint8 opcode, uint8 fillmode, RD_POINT * point, int npoints, BRUSH * brush,
+		int bgcolour, int fgcolour)
 {
   /* not used */
 }
 
 /*****************************************************************************/
 void
-ui_polyline(uint8 opcode, POINT * points, int npoints, PEN * pen)
+ui_polyline(uint8 opcode, RD_POINT * points, int npoints, PEN * pen)
 {
   int i, x, y, dx, dy;
   if (npoints > 0)
@@ -706,13 +707,13 @@ load_licence(uint8 ** data)
 
 /*****************************************************************************/
 void *
-xrealloc(void * in, int size)
+xrealloc(void *oldmem, size_t size)
 {
   if (size < 1)
   {
     size = 1;
   }
-  return realloc(in, size);
+  return realloc(oldmem, size);
 }
 
 /*****************************************************************************/
@@ -924,34 +925,76 @@ ui_read_wire(void)
 int
 ui_main(void)
 {
-  uint32 flags;
+	uint32 flags;
 	BOOL bInitClip=FALSE;
 
-  /* try to connect */
-  flags = RDP_LOGON_NORMAL;
-  if (g_password[0] != 0)
-  {
-    flags |= RDP_LOGON_AUTO;
-  }
-  if (!rdp_connect(g_servername, flags, g_domain, g_password,
-                   g_shell, g_directory))
-  {
-    return 0;
-  }
-  /* init backingstore */
-  bs_init(g_width, g_height, g_server_depth);
-  
-  /* create the window */
-  if (!mi_create_window())
-  {
-    return 0;
-  }
+	char server[64];
+	char fullhostname[64];
+	char domain[256];
+	char password[64];
+	char shell[256];
+	char directory[256];
 
-  /* Init Clipboard ??? */
-  //cliprdr_init();
-  SetCursor((HCURSOR)IDC_NO); //reset waitcursor set in WinMain
-  /* if all ok, enter main loop */
-  return mi_main_loop();
+    STRNCPY(domain, g_domain, sizeof(domain));
+	STRNCPY(password, g_password, sizeof(password));
+	STRNCPY(server, g_servername, sizeof(server));
+
+	// set logon mode depending if pw is set
+	flags = RDP_LOGON_NORMAL;
+	if (g_password[0] != 0)
+	{
+		flags |= RDP_LOGON_AUTO;
+	}
+
+	while (1) {
+
+		if (g_redirect)
+		{
+			/*free(g_username);
+			g_username = (char *) malloc(strlen(g_redirect_username) + 1);
+			STRNCPY(g_username, g_redirect_username, strlen(g_redirect_username) + 1);
+			
+			STRNCPY(domain, g_redirect_domain, sizeof(g_redirect_domain));
+			STRNCPY(password, g_redirect_password, sizeof(g_redirect_password));
+	
+			if(g_redirect_server[0] != 0)
+				STRNCPY(server, g_redirect_server, sizeof(g_redirect_server));
+
+			flags |= RDP_LOGON_AUTO;*/
+		}
+
+		g_redirect = FALSE;
+		if (!rdp_connect(server, flags, domain, password, g_shell, g_directory, g_redirect))
+		{
+			return 0;
+		}
+
+		if (!g_redirect) {
+			/* init backingstore */
+			bs_init(g_width, g_height, g_server_depth);
+  
+			/* create the window */
+			if (!mi_create_window())
+			{
+				return 0;
+			}
+
+			/* Init Clipboard ??? */
+			//cliprdr_init();
+			SetCursor(LoadCursor(NULL, IDC_NO)); //reset waitcursor set in WinMain 
+			/* if all ok, enter main loop */
+		}
+
+		mi_main_loop();
+
+		//if (g_redirect)
+		//	continue;
+
+		break;
+
+    }
+
+	return 1;
 }
 
 /*****************************************************************************/

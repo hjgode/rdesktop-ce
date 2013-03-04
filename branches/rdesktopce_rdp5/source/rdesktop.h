@@ -38,18 +38,20 @@
 #endif /* WIN32 */
 #include <limits.h>		/* PATH_MAX */
 
-#define VERSION "1.4.1"
+#define VERSION "1.7.1"
 
 //my debugging flags
 
 #define DBG_ORDERS 0 //1=enable debugmsg from inside orders.c
-#define DBG_RDP 0    //1=enable debugmsg for rdp.c
-#define DBG_SEC 0	 //1=enable debugmsg for secure.c
-#define DBG_W32 0	 //1=enable debugmsg for win32.c	
+#define DBG_RDP5 1   //whee
+#define DBG_RDP 1    //1=enable debugmsg for rdp.c
+#define DBG_SEC 1	 //1=enable debugmsg for secure.c
+#define DBG_LIC 1    //1=enable debugmsg for license.c
+#define DBG_W32 1	 //1=enable debugmsg for win32.c	
 #define DBK_KEY 0	 //1=enable debugmsg for keyboard debugging in win32.c	
 #define DBG_UIM 0	 //1=enable debugmsg for uimain.c	
 #define DBG_SCAN 0	 //1=enable debugmsg for scanner data
-#define DBG_TEST 1	 //1=enable debugmsg for testing
+#define DBG_TEST 0	 //1=enable debugmsg for testing
 
 #ifdef WITH_DEBUG
 #define DEBUG(args)	printf args;
@@ -64,7 +66,7 @@
 #endif
 
 #ifdef WITH_DEBUG_RDP5
-#define DEBUG_RDP5(args) printf args;
+#define DEBUG_RDP5(args) DbgOutString(args);
 #else
 #define DEBUG_RDP5(args)
 #endif

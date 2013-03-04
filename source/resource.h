@@ -5,7 +5,7 @@
 #define IDR_MENU1                       101
 #define HIRES                           102
 //#define HI_RES_AWARE                    102
-#define ID_FILE_EXIT                    40002
+#define ID_FILE_EXIT                    40001
 
 // Next default values for new objects
 // 

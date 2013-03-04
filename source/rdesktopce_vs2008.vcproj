@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="rdesktopce"
 	ProjectGUID="{9AF43C6E-FD90-46C6-8524-2D54083DD103}"
 	RootNamespace="rdesktopce"
@@ -42,6 +42,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="0"
+				AdditionalIncludeDirectories=".\inc"
 				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_WINDOWS;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
@@ -64,6 +65,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /subsystem:windowsce,5.01"
+				AdditionalDependencies="lib\ssleay32.lib lib\libeay32.lib lib\wcecompat.lib"
 				OutputFile="$(OutDir)/rdesktopce.exe"
 				LinkIncremental="2"
 				DelayLoadDLLs="$(NOINHERIT)"
@@ -129,6 +131,7 @@
 				ExecutionBucket="7"
 				Optimization="2"
 				FavorSizeOrSpeed="2"
+				AdditionalIncludeDirectories=".\inc"
 				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_WINDOWS;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
@@ -150,6 +153,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /subsystem:windowsce,5.01"
+				AdditionalDependencies="lib\ssleay32.lib lib\libeay32.lib lib\wcecompat.lib"
 				OutputFile="$(OutDir)/rdesktopce.exe"
 				LinkIncremental="1"
 				DelayLoadDLLs="$(NOINHERIT)"
@@ -252,7 +256,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ssl_calls.c"
+				RelativePath=".\ssl.c"
 				>
 			</File>
 			<File
@@ -298,7 +302,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\resource1.h"
+				RelativePath=".\ssl.h"
 				>
 			</File>
 			<File
@@ -311,10 +315,6 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
-			<File
-				RelativePath=".\rdesktopce.rc"
-				>
-			</File>
 		</Filter>
 		<File
 			RelativePath=".\_history.txt"

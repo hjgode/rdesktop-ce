@@ -1,24 +1,23 @@
 /*
    rdesktop: A Remote Desktop Protocol client.
    Common data types
-   Copyright (C) Matthew Chapman 1999-2005
-   
-   This program is free software; you can redistribute it and/or modify
+   Copyright (C) Matthew Chapman 1999-2008
+
+   This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
+   the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-   
+
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-typedef int BOOL;
+typedef int RD_BOOL;
 
 #ifndef True
 #define True  (1)
@@ -79,13 +78,22 @@ typedef struct _PEN
 }
 PEN;
 
+/* this is whats in the brush cache */
+typedef struct _BRUSHDATA
+{
+	uint32 colour_code;
+	uint32 data_size;
+	uint8 *data;
+}
+BRUSHDATA;
+
 typedef struct _BRUSH
 {
 	uint8 xorigin;
 	uint8 yorigin;
 	uint8 style;
 	uint8 pattern[8];
-
+	BRUSHDATA *bd;
 }
 BRUSH;
 
@@ -145,7 +153,7 @@ CELLHEADER;
 #define MAX_CBSIZE 256
 
 /* RDPSND */
-typedef struct
+typedef struct _RD_WAVEFORMATEX
 {
 	uint16 wFormatTag;
 	uint16 nChannels;
@@ -172,13 +180,13 @@ typedef uint32 RD_NTHANDLE;
 typedef struct _DEVICE_FNS
 {
 	RD_NTSTATUS(*create) (uint32 device, uint32 desired_access, uint32 share_mode,
-			   uint32 create_disposition, uint32 flags_and_attributes, char *filename,
-			   RD_NTHANDLE * handle);
+			      uint32 create_disposition, uint32 flags_and_attributes,
+			      char *filename, RD_NTHANDLE * handle);
 	RD_NTSTATUS(*close) (RD_NTHANDLE handle);
 	RD_NTSTATUS(*read) (RD_NTHANDLE handle, uint8 * data, uint32 length, uint32 offset,
-			 uint32 * result);
+			    uint32 * result);
 	RD_NTSTATUS(*write) (RD_NTHANDLE handle, uint8 * data, uint32 length, uint32 offset,
-			  uint32 * result);
+			     uint32 * result);
 	RD_NTSTATUS(*device_control) (RD_NTHANDLE handle, uint32 request, STREAM in, STREAM out);
 }
 DEVICE_FNS;
@@ -235,7 +243,7 @@ typedef struct rdpdr_printer_info
 	char *driver, *printer;
 	uint32 bloblen;
 	uint8 *blob;
-	BOOL default_printer;
+	RD_BOOL default_printer;
 }
 PRINTER;
 
@@ -260,11 +268,11 @@ typedef struct fileinfo
 	DIR *pdir;
 	struct dirent *pdirent;
 	char pattern[PATH_MAX];
-	BOOL delete_on_close;
+	RD_BOOL delete_on_close;
 	NOTIFY notify;
 	uint32 info_class;
 }
 FILEINFO;
 #endif
 
-typedef BOOL(*str_handle_lines_t) (const char *line, void *data);
+typedef RD_BOOL(*str_handle_lines_t) (const char *line, void *data);

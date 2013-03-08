@@ -897,7 +897,7 @@ sec_reset_state(void)
 	g_server_rdp_version = 0;
 	g_sec_encrypt_use_count = 0;
 	g_sec_decrypt_use_count = 0;
-	g_licence_issued = False;
+	g_licence_issued = False;	//see https://sourceforge.net/p/rdesktop/patches/214/
 	mcs_reset_state();
 }
 

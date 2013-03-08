@@ -67,7 +67,7 @@ extern char g_redirect_domain[16];
 extern char g_redirect_password[64];
 extern char *g_redirect_username;
 extern char g_redirect_cookie[128];
-extern uint32 g_redirect_cookie_len;
+extern uint32 g_redirect_cookie_len;	//see https://sourceforge.net/p/rdesktop/patches/214/
 extern uint32 g_redirect_flags;
 /* END Session Directory support */
 
@@ -365,16 +365,7 @@ rdp_send_logon_info(uint32 flags, char *domain, char *user,
 	else
 	{
 		flags |= RDP_LOGON_BLOB;
-
-		if (g_redirect) 
-		{
-			DEBUGMSG(DBG_RDP5, (L"Sending RDP5-style logon packet with password cookie\n"));
-			len_password = g_redirect_cookie_len + 2; /* wts 2008 seems to need double null byte after the cookie ... */ 
-		} 
-		else 
-		{
-			DEBUGMSG(DBG_RDP5, (L"Sending RDP5-style Logon packet\n"));
-		}
+		DEBUGMSG(DBG_RDP5, (L"Sending RDP5-style Logon packet\n"));
 		packetlen = 4 +	/* Unknown uint32 */
 			4 +	/* flags */
 			2 +	/* len_domain */
@@ -401,20 +392,31 @@ rdp_send_logon_info(uint32 flags, char *domain, char *user,
 		s = sec_init(sec_flags, packetlen);
 		DEBUGMSG(DBG_RDP5, (L"Called sec_init with packetlen %d\n", packetlen));
 
+		//if (g_redirect) 
+		//{
+		//	DEBUGMSG(DBG_RDP5, (L"Sending RDP5-style logon packet with password cookie\n"));
+		//	len_password = g_redirect_cookie_len + 2; /* wts 2008 seems to need double null byte after the cookie ... */ 
+		//} 
+		//else 
+		//{
+		//	DEBUGMSG(DBG_RDP5, (L"Sending RDP5-style Logon packet\n"));
+		//}
+
 		out_uint32(s, 0);	/* Unknown */
 		out_uint32_le(s, flags);
 		out_uint16_le(s, len_domain);
 		out_uint16_le(s, len_user);
 		if (flags & RDP_LOGON_AUTO)
 		{
-			if (g_redirect)
-            {
-				out_uint16_le(s, g_redirect_cookie_len);
-			}
-			else 
-			{	
-				out_uint16_le(s, len_password);
-			}
+			out_uint16_le(s, len_password);
+			//if (g_redirect)
+   //         {
+			//	out_uint16_le(s, g_redirect_cookie_len);
+			//}
+			//else 
+			//{	
+			//	out_uint16_le(s, len_password);
+			//}
 
 		}
 		if (flags & RDP_LOGON_BLOB && !(flags & RDP_LOGON_AUTO))
@@ -430,15 +432,16 @@ rdp_send_logon_info(uint32 flags, char *domain, char *user,
 		rdp_out_unistr(s, user, len_user);
 		if (flags & RDP_LOGON_AUTO)
 		{
-			if (g_redirect) 
-			{
-				out_uint8a(s, g_redirect_cookie, g_redirect_cookie_len);
-				out_uint16_le(s, 0); 
-			} 
-			else
-			{
-				rdp_out_unistr(s, password, len_password);
-			}
+			rdp_out_unistr(s, password, len_password);
+			//if (g_redirect) 
+			//{
+			//	out_uint8a(s, g_redirect_cookie, g_redirect_cookie_len);
+			//	out_uint16_le(s, 0); 
+			//} 
+			//else
+			//{
+			//	rdp_out_unistr(s, password, len_password);
+			//}
 		}
 		if (flags & RDP_LOGON_BLOB && !(flags & RDP_LOGON_AUTO))
 		{
@@ -1522,12 +1525,35 @@ process_redirect_pdu(STREAM s /*, uint32 * ext_disc_reason */ )
 		rdp_in_unistr(s, g_redirect_server, sizeof(g_redirect_server), len);
 	}
 
-	if (g_redirect_flags & PDU_REDIRECT_HAS_LB_INFO)
+	if (g_redirect_flags & PDU_REDIRECT_HAS_COOKIE)
 	{
+		/* read length of cookie string */
 		in_uint32_le(s, len);
-		/* what for could the load balance info be used ?... */
-		in_uint8s(s, len);
+
+		/* read cookie string (plain ASCII) */
+		if (len > sizeof(g_redirect_cookie) - 1)
+		{
+			uint32 rem = len - (sizeof(g_redirect_cookie) - 1);
+			len = sizeof(g_redirect_cookie) - 1;
+
+			warning("Unexpectedly large redirection cookie\n");
+			in_uint8a(s, g_redirect_cookie, len);
+			in_uint8s(s, rem);
+		}
+		else
+		{
+			in_uint8a(s, g_redirect_cookie, len);
+		}
+		/* g_redirect_cookie[len] = 0; */
+		g_redirect_cookie_len = len;
 	}
+
+	//if (g_redirect_flags & PDU_REDIRECT_HAS_LB_INFO)
+	//{
+	//	in_uint32_le(s, len);
+	//	/* what for could the load balance info be used ?... */
+	//	in_uint8s(s, len);
+	//}
 
 	if (g_redirect_flags & PDU_REDIRECT_HAS_USERNAME)
     {
@@ -1548,32 +1574,41 @@ process_redirect_pdu(STREAM s /*, uint32 * ext_disc_reason */ )
         rdp_in_unistr(s, g_redirect_domain, sizeof(g_redirect_domain), len);
     }
 
+	//if (g_redirect_flags & PDU_REDIRECT_HAS_PASSWORD)
+	//{
+	//	/* read length of cookie string */
+	//	in_uint32_le(s, len);
+
+	//	/* read cookie string (plain ASCII) */
+	//	if (len > sizeof(g_redirect_cookie) - 1)
+	//	{
+	//		uint32 rem = len - (sizeof(g_redirect_cookie) - 1);
+	//		len = sizeof(g_redirect_cookie) - 1;
+
+	//		warning("Unexpectedly large redirection cookie\n");
+	//		in_uint8a(s, g_redirect_cookie, len);
+	//		in_uint8s(s, rem);
+	//	}
+	//	else
+	//	{
+	//		in_uint8a(s, g_redirect_cookie, len);
+	//	}
+	//	/* read length of password string */
+	//	in_uint32_le(s, len);
+
+	//	/* read password string */
+	//	rdp_in_unistr(s, g_redirect_password, sizeof(g_redirect_password), len);
+
+	//	//g_redirect_cookie_len = len;
+	//}
+
 	if (g_redirect_flags & PDU_REDIRECT_HAS_PASSWORD)
 	{
-		/* read length of cookie string */
-		in_uint32_le(s, len);
-
-		/* read cookie string (plain ASCII) */
-		if (len > sizeof(g_redirect_cookie) - 1)
-		{
-			uint32 rem = len - (sizeof(g_redirect_cookie) - 1);
-			len = sizeof(g_redirect_cookie) - 1;
-
-			warning("Unexpectedly large redirection cookie\n");
-			in_uint8a(s, g_redirect_cookie, len);
-			in_uint8s(s, rem);
-		}
-		else
-		{
-			in_uint8a(s, g_redirect_cookie, len);
-		}
 		/* read length of password string */
 		in_uint32_le(s, len);
 
 		/* read password string */
 		rdp_in_unistr(s, g_redirect_password, sizeof(g_redirect_password), len);
-
-		g_redirect_cookie_len = len;
 	}
 
 	if (g_redirect_flags & PDU_REDIRECT_DONT_STORE_USERNAME)

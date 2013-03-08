@@ -16,6 +16,8 @@
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+   rdesktop.c
 */
 
 #include "rdesktop.h"
@@ -56,8 +58,8 @@ BOOL g_redirect = False;
 char g_redirect_server[64];
 char g_redirect_domain[16];
 char g_redirect_password[64];
-char g_redirect_username[64];
-char g_redirect_cookie[128];
+char g_redirect_username[64];	//char *g_redirect_username;
+char g_redirect_cookie[128];	//see https://sourceforge.net/p/rdesktop/patches/214/
 uint32 g_redirect_cookie_len = 0;
 uint32 g_redirect_flags = 0;
 
@@ -945,12 +947,16 @@ ui_main(void)
 	{
 		flags |= RDP_LOGON_AUTO;
 	}
+	//rdpdr_init();		//CE version does not yet support redirector
 
 	while (1) {
 
+		//rdesktop_reset_state();	//CE version does not have this
+		rdp_reset_state();
+
 		if (g_redirect)
 		{
-			/*free(g_username);
+			free(g_username);
 			g_username = (char *) malloc(strlen(g_redirect_username) + 1);
 			STRNCPY(g_username, g_redirect_username, strlen(g_redirect_username) + 1);
 			
@@ -960,15 +966,26 @@ ui_main(void)
 			if(g_redirect_server[0] != 0)
 				STRNCPY(server, g_redirect_server, sizeof(g_redirect_server));
 
-			flags |= RDP_LOGON_AUTO;*/
+			flags |= RDP_LOGON_AUTO;
+			//we are back to normal undirected server
+			g_redirect=FALSE;
 		}
 
-		g_redirect = FALSE;
+		//g_redirect = FALSE;
+		//ui_init_connection();	//windows sizing etc will done in mi_create_window()
+
 		if (!rdp_connect(server, flags, domain, password, g_shell, g_directory, g_redirect))
 		{
-			return 0;
+			return 0; //EX_PROTOCOL not used in CE version
 		}
 
+		/* By setting encryption to False here, we have an encrypted login 
+		   packet but unencrypted transfer of other packets 
+		   NOT YET supported in CE version */
+		//if (!g_packet_encryption)
+		//	g_encryption = False;
+
+		DEBUGMSG(DBG_RDP, (L"Connection successful.\n"));
 		if (!g_redirect) {
 			/* init backingstore */
 			bs_init(g_width, g_height, g_server_depth);
@@ -985,7 +1002,16 @@ ui_main(void)
 			/* if all ok, enter main loop */
 		}
 
+		g_redirect = False;
 		mi_main_loop();
+
+//		rdp_main_loop(&deactivated, &ext_disc_reason);
+		DEBUGMSG(DBG_RDP, (L"Disconnecting...\n"));
+		//if (!tcp_is_connected())
+		//	rdp_disconnect();
+
+		if (g_redirect)
+			continue;
 
 		//if (g_redirect)
 		//	continue;

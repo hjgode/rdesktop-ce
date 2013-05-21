@@ -24,7 +24,7 @@
 
 //use barcode scanner code?
 #define USE_SCANNER
-#undef USE_SCANNER
+//#undef USE_SCANNER
 
 int MENU_HEIGHT=26; //was a #define
 
@@ -53,10 +53,24 @@ extern int WSAAsyncSelect(
 #ifdef USE_SCANNER
 	#include "barcodereader.h"
 #endif
-	#include "keymap.h"
+
+#include "keymap.h"
+
+//MapVirtualKey
+#ifndef MAPVK_VK_TO_VSC
+	#define MAPVK_VK_TO_VSC      0
+	#define	MAPVK_VSC_TO_VK      1
+	#define MAPVK_VK_TO_CHAR     2
+	#define MAPVK_VSC_TO_VK_EX   3
+	#define MAPVK_VK_TO_VSC_EX   4
+#endif
+
+BOOL g_rdpclip = FALSE;
+
 //wait cursor on startup
 HCURSOR hCurs1;
 
+extern BOOL g_busescanner;
 extern char *g_username;
 extern char g_hostname[16];
 extern char g_servername[];
@@ -711,6 +725,9 @@ static LRESULT handle_WM_CHAR(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 
 	ext &= 0x0100;
 
+	/*
+	if we start to process WM_CHAR messages we have to watch for side effects
+	*/
 		//ui_key_down(scancode, ext);
 		//ui_key_up(scancode, ext);
 
@@ -755,16 +772,16 @@ static LRESULT handle_WM_KEYDOWN(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 	//get CAPS lock state
 	CapsLock=GetKeyState(VK_CAPITAL);
 	CapsLock &= 0x01; //is lowest bit toggled?
-	DEBUGMSG(DBK_KEY, (L"CapsLock Status: 0x%02x\n", CapsLock));
+	DEBUGMSG(DBK_KEY, (L"WM_KEYDOWN: CapsLock Status: 0x%02x\n", CapsLock));
 	//capslock on SIP delivers up/down for each tap!
 	//do not send CapsLock key strokes, these will be handled elsewhere!
 	if(wParam==VK_CAPITAL){
 		mi_check_modifier();
-		DEBUGMSG(DBK_KEY, (L"==== VK_CAPITAL detected, return immediately\n"));
+		DEBUGMSG(DBK_KEY, (L"WM_KEYDOWN: ==== VK_CAPITAL detected, return immediately\n"));
 		return TRUE;
 	}
 
-  DEBUGMSG(DBK_KEY, (L"WM_KEY: wParam(vKey)=0x%02x, lParam=0x%02x, scancode=0x%02x\n", wParam, lParam, scancode));
+  DEBUGMSG(DBK_KEY, (L"WM_KEYDOWN: wParam(vKey)=0x%02x, lParam=0x%02x, scancode=0x%02x\n", wParam, lParam, scancode));
 
   //although keyboard buttons produce a scancode, this is not a standard PS/2 one on WinCE
   //so we trust wParam
@@ -773,11 +790,11 @@ static LRESULT handle_WM_KEYDOWN(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
   {
 	scancode = get_ScanCode_from_VKey(wParam);
     //scancode = get_scan_code_from_ascii(wParam);//wParam is vk_ value
-    DEBUGMSG(DBK_KEY, (L"WM_KEY: MODIFIED scancode=0x%0x\n", scancode));
+    DEBUGMSG(DBK_KEY, (L"WM_KEYDOWN: MODIFIED scancode=0x%0x\n", scancode));
   }
 	//TEST scancode &= 0xff;
 	mScancode = MapVirtualKey(wParam, 0); //uCode is a virtual-key code and is translated into a scan code.
-	DEBUGMSG(DBK_KEY, (L"WM_KEY: MapVirtualKey wParm=0x%0x => 0x%02x\n", wParam, mScancode));
+	DEBUGMSG(DBK_KEY, (L"WM_KEYDOWN: MapVirtualKey wParm=0x%0x => 0x%02x\n", wParam, mScancode));
 	//  scancode=mScancode; 
 	// end TEST
 
@@ -823,16 +840,16 @@ static LRESULT handle_WM_KEYUP(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 	//get CAPS lock state
 	CapsLock=GetKeyState(VK_CAPITAL);
 	CapsLock &= 0x01; //is lowest bit toggled?
-	DEBUGMSG(DBK_KEY, (L"CapsLock Status: 0x%02x\n", CapsLock));
+	DEBUGMSG(DBK_KEY, (L"WM_KEYUP: CapsLock Status: 0x%02x\n", CapsLock));
 	//capslock on SIP delivers up/down for each tap!
 	//do not send CapsLock key strokes, these will be handled elsewhere!
 	if(wParam==VK_CAPITAL){
 		mi_check_modifier();
-		DEBUGMSG(DBK_KEY, (L"==== VK_CAPITAL detected, return immediately\n"));
+		DEBUGMSG(DBK_KEY, (L"WM_KEYUP: ==== VK_CAPITAL detected, return immediately\n"));
 		return TRUE;
 	}
 
-  DEBUGMSG(DBK_KEY, (L"WM_KEY: wParam(vKey)=0x%02x, lParam=0x%02x, scancode=0x%02x\n", wParam, lParam, scancode));
+  DEBUGMSG(DBK_KEY, (L"WM_KEYUP: wParam(vKey)=0x%02x, lParam=0x%02x, scancode=0x%02x\n", wParam, lParam, scancode));
 
   //although keyboard buttons produce a scancode, this is not a standard PS/2 one on WinCE
   //so we trust wParam
@@ -841,15 +858,16 @@ static LRESULT handle_WM_KEYUP(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
   {
 	scancode = get_ScanCode_from_VKey(wParam);
     //scancode = get_scan_code_from_ascii(wParam);//wParam is vk_ value
-    DEBUGMSG(DBK_KEY, (L"WM_KEY: MODIFIED scancode=0x%0x\n", scancode));
+    DEBUGMSG(DBK_KEY, (L"WM_KEYUP: MODIFIED scancode=0x%0x\n", scancode));
   }
 	//TEST scancode &= 0xff;
-	mScancode = MapVirtualKey(wParam, 0); //uCode is a virtual-key code and is translated into a scan code.
-	DEBUGMSG(DBK_KEY, (L"WM_KEY: MapVirtualKey wParm=0x%0x => 0x%02x\n", wParam, mScancode));
+	mScancode = MapVirtualKey(wParam, MAPVK_VK_TO_VSC); //uCode is a virtual-key code and is translated into a scan code.
+	DEBUGMSG(DBK_KEY, (L"WM_KEYUP: MapVirtualKey wParm=0x%0x => 0x%02x\n", wParam, mScancode));
 	//  scancode=mScancode; 
 	// end TEST
 
   ui_key_up(scancode, ext);
+  DEBUGMSG(DBK_KEY, (L"WM_KEYUP: END\n\n"));
   return 0;
 }
 
@@ -1201,24 +1219,32 @@ LRESULT CALLBACK
 WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	char* cStr;
-//	TCHAR* wStr;
+	TCHAR* wStr;
   switch (message)
   {
 #ifdef USE_SCANNER
 	case WM_CREATE:
-	  	// Create a synchronization event for scanner thread synchronization.
-		ghScannRead = CreateEvent(NULL, FALSE, FALSE, NULL);
-		// Now create the read thread to monitor the scanner.
-		ghScannerThread = CreateThread(0, 0, ScanThread, (LPVOID) hWnd, 0, 0);
+		if(g_busescanner){	//do not start scanner thread if g_busescanner is FALSE
+			DEBUGMSG(1, (L"starting with barcode scanner support\n"));
+	  		// Create a synchronization event for scanner thread synchronization.
+			ghScannRead = CreateEvent(NULL, FALSE, FALSE, NULL);
+			// Now create the read thread to monitor the scanner.
+			ghScannerThread = CreateThread(0, 0, ScanThread, (LPVOID) hWnd, 0, 0);
+		}
+		else
+			DEBUGMSG(1, (L"+++ starting without barcode scanner support +++\n"));
+
 		break;
 	case WM_HAVE_SCAN:
 		// here is the scanned data
 		cStr=(char*)malloc(gOneScan.dwBytesReturned+1);
 #ifdef DEBUG
-		wStr=(TCHAR*)malloc(gOneScan.dwBytesReturned*2 + 2);
+		wStr=(TCHAR*)malloc(gOneScan.dwBytesReturned*2+2);
+		memset(wStr, 0, gOneScan.dwBytesReturned*2+2);
 #endif
-		strncpy(cStr, gOneScan.rgbDataBuffer, gOneScan.dwBytesReturned);
-		strcat(cStr, "\0");
+		memset(cStr,0,gOneScan.dwBytesReturned+1);
+		memcpy(cStr, gOneScan.rgbDataBuffer, gOneScan.dwBytesReturned);
+		//strcat(cStr, "\0");
 		//sprintf(cStr, "%s", gOneScan.rgbDataBuffer);
 #ifdef DEBUG
 		str_to_uni(wStr, cStr);
@@ -1226,7 +1252,7 @@ WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		free(wStr);
 #endif
 		SendKeys(cStr);
-		SendKeys("\r");
+//		SendKeys("\r");
 		free(cStr); 
 		// Note: Artificial delay added so we can see scan ahead work.
 		//Sleep(10); //was 2000 HGO
@@ -1283,7 +1309,7 @@ WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		//	return DefWindowProc(hWnd, message, wParam, lParam); //let windows translate this to WM_CHAR
 		//else
 		return handle_WM_KEYUP(hWnd, message, wParam, lParam);
-#ifndef USE_SCANNER
+//#ifndef USE_SCANNER
     case WM_CHAR: //########### HGO ##############
     case WM_DEADCHAR:
     case WM_SYSCHAR:
@@ -1292,7 +1318,7 @@ WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		return handle_WM_CHAR(hWnd, message, wParam, lParam);
 		//return DefWindowProc(hWnd, message, wParam, lParam);
       break;
-#endif
+//#endif
     case WM_PAINT:
       return handle_WM_PAINT(hWnd, message, wParam, lParam);
     case WM_DESTROY:
@@ -1637,6 +1663,10 @@ mi_process_a_param(char * param1, int state)
     {
       state = 11;
     }
+    if (strcmp(param1, "-b") == 0 || strcmp(param1, "barcodescanner") == 0)
+    {
+      state = 12;
+    }
   }
   else
   {
@@ -1713,9 +1743,14 @@ mi_process_a_param(char * param1, int state)
     {
       state = 0;
 	  //g_rdpclip = TRUE;
-      //strcpy(g_hostname, param1);
+   //   strcpy(g_hostname, param1);
 	  //cliprdr_set_mode("PRIMARYCLIPBOARD");
     }
+    if (state == 11) /* -x clipboard */
+    {
+		g_busescanner=TRUE;
+      state = 0;
+	}
   }
   return state;
 }

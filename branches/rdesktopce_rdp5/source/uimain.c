@@ -23,6 +23,7 @@
 #include "rdesktop.h"
 #include "bsops.h"
 
+BOOL g_busescanner=FALSE;
 char *g_username;
 char g_hostname[256] = "";
 char g_servername[256] = "";
@@ -931,12 +932,13 @@ ui_main(void)
 	BOOL bInitClip=FALSE;
 
 	char server[64];
-	char fullhostname[64];
 	char domain[256];
 	char password[64];
+/*
+	char fullhostname[64];
 	char shell[256];
 	char directory[256];
-
+*/
     STRNCPY(domain, g_domain, sizeof(domain));
 	STRNCPY(password, g_password, sizeof(password));
 	STRNCPY(server, g_servername, sizeof(server));

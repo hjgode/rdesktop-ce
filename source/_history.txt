@@ -68,3 +68,5 @@ Usage:
 			changed SendKeys(":ART\r");  inside WndProc (win32.c) for WM_HAVE_SCAN to SendKeys("\r");
 			This code line sends a return code after sending barcode received data and is known as Postamble
 			
+r59			version before TLS SSL patch
+

@@ -1,5 +1,7 @@
 WinRdesktop
 
+MANY THANKS to Adam B., Trent M. and Brad H. for getting SSL and TLS 1.0 working
+
 A free rdp client for Windows Mobile
 
 Usage:

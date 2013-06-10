@@ -4,7 +4,7 @@
 #define INCLUDED_BARCODESCAN_H                /* No, remember it has been now         */
 
 #include <windows.h>
-#include <winbase.h>
+//#include <winbase.h>
 
 //see C:\Program Files\Intermec\Developer Library\Include
 //and C:\Program Files\Intermec\Developer Library\Lib

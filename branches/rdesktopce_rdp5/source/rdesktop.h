@@ -22,9 +22,9 @@
 #include <stdio.h>
 #include <string.h>
 #ifdef _WIN32
-#include <winsock2.h> /* winsock2.h first */
-#include <windows.h>
-#include <time.h>
+	#include <winsock2.h> /* winsock2.h first */
+	#include <windows.h>
+	#include <time.h>
 #else /* WIN32 */
 #include <dirent.h>
 #include <sys/types.h>

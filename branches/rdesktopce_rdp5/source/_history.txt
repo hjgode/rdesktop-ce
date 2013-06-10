@@ -70,3 +70,6 @@ Usage:
 			
 r59			version before TLS SSL patch
 
+r60
+			added SSL(TLS1.0) support analog to rdesktop 1.7.1
+			

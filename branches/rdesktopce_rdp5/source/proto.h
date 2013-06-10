@@ -74,7 +74,7 @@ void ewmh_init(void);
 STREAM iso_init(int length);
 void iso_send(STREAM s);
 STREAM iso_recv(uint8 * rdpver);
-RD_BOOL iso_connect(char *server, char *username, RD_BOOL reconnect);
+RD_BOOL iso_connect(char *server, char *username, RD_BOOL reconnect, uint32 * selected_protocol);
 void iso_disconnect(void);
 void iso_reset_state(void);
 /* licence.c */
@@ -84,7 +84,9 @@ STREAM mcs_init(int length);
 void mcs_send_to_channel(STREAM s, uint16 channel);
 void mcs_send(STREAM s);
 STREAM mcs_recv(uint16 * channel, uint8 * rdpver);
-RD_BOOL mcs_connect(char *server, STREAM mcs_data, char *username, RD_BOOL reconnect);
+RD_BOOL mcs_connect_start(char *server, char *username, RD_BOOL reconnect,
+			  uint32 * selected_protocol);
+RD_BOOL mcs_connect_finalize(STREAM s);
 void mcs_disconnect(void);
 void mcs_reset_state(void);
 /* orders.c */
@@ -202,6 +204,7 @@ STREAM tcp_init(uint32 maxlen);
 void tcp_send(STREAM s);
 STREAM tcp_recv(STREAM s, uint32 length);
 RD_BOOL tcp_connect(char *server);
+RD_BOOL tcp_tls_connect(void);	/* Establish a SSL/TLS 1.0 connection */
 void tcp_disconnect(void);
 char *tcp_get_address(void);
 void tcp_reset_state(void);

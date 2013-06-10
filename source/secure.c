@@ -30,7 +30,8 @@ extern int g_keyboard_subtype;
 extern int g_keyboard_functionkeys;
 extern RD_BOOL g_encryption;
 extern RD_BOOL g_licence_issued;
-extern RD_BOOL g_use_rdp5;
+extern RD_BOOL g_licence_error_result;
+extern RDP_VERSION g_rdp_version;
 extern RD_BOOL g_console_session;
 extern int g_server_depth;
 extern VCHANNEL g_channels[];
@@ -114,7 +115,8 @@ sec_hash_16(uint8 * out, uint8 * in, uint8 * salt1, uint8 * salt2)
 /*
  * 16-byte sha1 hash
  */
-void sec_hash_sha1_16(uint8 * out, uint8 * in, uint8 *salt1)
+void
+sec_hash_sha1_16(uint8 * out, uint8 * in, uint8 * salt1)
 {
 	SSL_SHA1 sha1;
 	ssl_sha1_init(&sha1);
@@ -124,7 +126,8 @@ void sec_hash_sha1_16(uint8 * out, uint8 * in, uint8 *salt1)
 }
 
 /* create string from hash */
-void sec_hash_to_string(char * out, int out_size, uint8 * in, int in_size)
+void
+sec_hash_to_string(char *out, int out_size, uint8 * in, int in_size)
 {
 	int k;
 	memset(out,0,out_size);
@@ -314,7 +317,7 @@ sec_init(uint32 flags, int maxlen)
 	int hdrlen;
 	STREAM s;
 
-	if (!g_licence_issued)
+	if (!g_licence_issued && !g_licence_error_result)
 		hdrlen = (flags & SEC_ENCRYPT) ? 12 : 4;
 	else
 		hdrlen = (flags & SEC_ENCRYPT) ? 12 : 0;
@@ -335,7 +338,7 @@ sec_send_to_channel(STREAM s, uint32 flags, uint16 channel)
 #endif
 
 	s_pop_layer(s, sec_hdr);
-	if (!g_licence_issued || (flags & SEC_ENCRYPT))
+	if ((!g_licence_issued && !g_licence_error_result) || (flags & SEC_ENCRYPT))
 		out_uint32_le(s, flags);
 
 	if (flags & SEC_ENCRYPT)
@@ -388,10 +391,10 @@ sec_establish_key(void)
 
 /* Output connect initial data blob */
 static void
-sec_out_mcs_data(STREAM s)
+sec_out_mcs_data(STREAM s, uint32 selected_protocol)
 {
 	int hostlen = 2 * strlen(g_hostname);
-	int length = 158 + 76 + 12 + 4;
+	int length = 162 + 76 + 12 + 4;
 	unsigned int i;
 
 	if (g_num_channels > 0)
@@ -419,8 +422,8 @@ sec_out_mcs_data(STREAM s)
 
 	/* Client information */
 	out_uint16_le(s, SEC_TAG_CLI_INFO);
-	out_uint16_le(s, 212);	/* length */
-	out_uint16_le(s, g_use_rdp5 ? 4 : 1);	/* RDP version. 1 == RDP4, 4 == RDP5. */
+	out_uint16_le(s, 216);	/* length */
+	out_uint16_le(s, (g_rdp_version >= RDP_V5) ? 4 : 1);	/* RDP version. 1 == RDP4, 4 >= RDP5 to RDP8 */
 	out_uint16_le(s, 8);
 	out_uint16_le(s, g_width);
 	out_uint16_le(s, g_height);
@@ -447,7 +450,8 @@ sec_out_mcs_data(STREAM s)
 	out_uint16_le(s, 0x0700);
 	out_uint8(s, 0);
 	out_uint32_le(s, 1);
-	out_uint8s(s, 64);	/* End of client info */
+	out_uint8s(s, 64);
+	out_uint32_le(s, selected_protocol);	/* End of client info */
 
 	out_uint16_le(s, SEC_TAG_CLI_4);
 	out_uint16_le(s, 12);
@@ -539,8 +543,11 @@ sec_parse_crypt_info(STREAM s, uint32 * rc4_key_size,
 
 	in_uint32_le(s, *rc4_key_size);	/* 1 = 40-bit, 2 = 128-bit */
 	in_uint32_le(s, crypt_level);	/* 1 = low, 2 = medium, 3 = high */
-	if (crypt_level == 0)	/* no encryption */
+	if (crypt_level == 0)
+	{
+		/* no encryption */
 		return False;
+	}
 	in_uint32_le(s, random_len);
 	in_uint32_le(s, rsa_info_len);
 
@@ -721,7 +728,7 @@ sec_process_srv_info(STREAM s)
 	DEBUG_RDP5(("Server RDP version is %d\n", g_server_rdp_version));
 	if (1 == g_server_rdp_version)
 	{
-		g_use_rdp5 = 0;
+		g_rdp_version = RDP_V4;
 		g_server_depth = 8;
 	}
 }
@@ -796,13 +803,15 @@ sec_recv(uint8 * rdpver)
 				return s;
 			}
 		}
-		if (g_encryption || !g_licence_issued)
+		if (g_encryption || (!g_licence_issued && !g_licence_error_result))
 		{
 			in_uint32_le(s, sec_flags);
 
-			if (sec_flags & SEC_ENCRYPT)
+			if (g_encryption)
 			{
-				in_uint8s(s, 8);	/* signature */
+				if (sec_flags & SEC_ENCRYPT)
+				{
+					in_uint8s(s, 8);	/* signature */
 				sec_decrypt(s->p, s->end - s->p);
 			}
 
@@ -847,6 +856,16 @@ sec_recv(uint8 * rdpver)
 			}
 
 		}
+			else
+			{
+				if ((sec_flags & 0xffff) == SEC_LICENCE_NEG)
+				{
+					licence_process(s);
+					continue;
+				}
+				s->p -= 4;
+			}
+		}
 
 		if (channel != MCS_GLOBAL_CHANNEL)
 		{
@@ -866,14 +885,20 @@ sec_recv(uint8 * rdpver)
 RD_BOOL
 sec_connect(char *server, char *username, RD_BOOL reconnect)
 {
+	uint32 selected_proto;
 	struct stream mcs_data;
+
+	/* Start a MCS connect sequence */
+	if (!mcs_connect_start(server, username, reconnect, &selected_proto))
+		return False;
 
 	/* We exchange some RDP data during the MCS-Connect */
 	mcs_data.size = 512;
 	mcs_data.p = mcs_data.data = (uint8 *) xmalloc(mcs_data.size);
-	sec_out_mcs_data(&mcs_data);
+	sec_out_mcs_data(&mcs_data, selected_proto);
 
-	if (!mcs_connect(server, &mcs_data, username, reconnect))
+	/* finialize the MCS connect sequence */
+	if (!mcs_connect_finalize(&mcs_data))
 		return False;
 
 	/*      sec_process_mcs_data(&mcs_data); */

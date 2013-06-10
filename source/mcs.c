@@ -373,12 +373,14 @@ mcs_recv(uint16 * channel, uint8 * rdpver)
 }
 
 RD_BOOL
-mcs_connect(char *server, STREAM mcs_data, char *username, RD_BOOL reconnect)
+mcs_connect_start(char *server, char *username, RD_BOOL reconnect, uint32 * selected_protocol)
 {
-	unsigned int i;
+	return iso_connect(server, username, reconnect, selected_protocol);
+}
 
-	if (!iso_connect(server, username, reconnect))
-		return False;
+RD_BOOL
+mcs_connect_finalize(STREAM mcs_data){
+	unsigned int i;
 
 	mcs_send_connect_initial(mcs_data);
 	if (!mcs_recv_connect_response(mcs_data))

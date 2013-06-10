@@ -24,7 +24,7 @@
 
 //use barcode scanner code?
 #define USE_SCANNER
-//#undef USE_SCANNER
+#undef USE_SCANNER
 
 int MENU_HEIGHT=26; //was a #define
 
@@ -38,9 +38,9 @@ extern int WSAAsyncSelect(
 		);
 
 #include <windows.h>
-#ifdef MYWINCE
-#include <aygshell.h> /* aygshell.lib */
-#pragma comment (lib, "aygshell.lib")
+	#ifdef MYWINCE
+	#include <aygshell.h> /* aygshell.lib */
+	#pragma comment (lib, "aygshell.lib")
 #endif /* MYWINCE */
 #include <winuser.h>
 #include <stdio.h>

@@ -24,7 +24,7 @@
 
 //use barcode scanner code?
 #define USE_SCANNER
-//#undef USE_SCANNER
+#undef USE_SCANNER
 
 int MENU_HEIGHT=26; //was a #define
 

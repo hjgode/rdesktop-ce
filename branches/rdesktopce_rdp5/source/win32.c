@@ -37,11 +37,15 @@ extern int WSAAsyncSelect(
 		IN long lEvent
 		);
 
+//show a menubar?
+#define USE_MENUBAR
+
 #include <windows.h>
 	#ifdef MYWINCE
 	#include <aygshell.h> /* aygshell.lib */
 	#pragma comment (lib, "aygshell.lib")
 #endif /* MYWINCE */
+
 #include <winuser.h>
 #include <stdio.h>
 #include "resource.h" //HGO
@@ -212,22 +216,25 @@ int ExistFile(TCHAR* filename)
 }
 
 /*****************************************************************************/
-void doCreateMenu(){
+void doCreateMenu(HWND _hwndMain, HINSTANCE _hInstMain){
 	SHMENUBARINFO mb;
   if(g_hMenuBar==0)
   {
-	ZeroMemory(&mb, sizeof(SHMENUBARINFO));
+	memset(&mb,0,sizeof(SHMENUBARINFO));// ZeroMemory(&mb, sizeof(SHMENUBARINFO));
 	mb.cbSize = sizeof(SHMENUBARINFO);
-	mb.hwndParent = g_Wnd;
-	mb.hInstRes = g_Instance;			   // Inst handle of app
-	mb.dwFlags = SHCMBF_HMENU; //SHCMBF_EMPTYBAR;
+	mb.hwndParent = _hwndMain;
+	mb.hInstRes = _hInstMain;			   // Inst handle of app
+	mb.dwFlags = SHCMBF_HIDESIPBUTTON; //SHCMBF_EMPTYBAR; //SHCMBF_HMENU; //SHCMBF_EMPTYBAR;
 	mb.nToolBarId = IDR_MENU1;	// HGO 0;                     // ID of toolbar resource
 	mb.nBmpId = 0;                         // ID of bitmap resource
 	mb.cBmpImages = 0;                     // Num of images in bitmap 
-	mb.hwndMB = 0;                         // Handle of bar returned
+	//mb.hwndMB = 0;                         // Handle of bar returned
 
+	DEBUGMSG(1, (L"Main: %i, Inst: %i\n", _hwndMain, _hInstMain));
 	if (!SHCreateMenuBar(&mb))
-		DEBUGMSG(DBG_W32, (L"Could not create menubar!\n"));
+		DEBUGMSG(DBG_W32, (L"Could not create menubar! ERROR=%i\n", GetLastError()));	//120L = not supported
+	
+	//SHFullScreen (hwndMain, SHFS_SHOWSIPBUTTON);
 	g_hMenuBar = mb.hwndMB; //HGO
   }
 }
@@ -1131,7 +1138,6 @@ static LRESULT
 handle_WM_SETTINGCHANGE(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
   SIPINFO si;
-  //SHMENUBARINFO mb;
   int x;
   int y;
   int w;
@@ -1154,7 +1160,10 @@ handle_WM_SETTINGCHANGE(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   {
     g_sip_up = 1; /* used for WM_SETFOCUS */
 
+#ifdef USE_MENUBAR
+	// ######## NOT used, see doCreateMenu! ########
 	////XXX
+	//SHMENUBARINFO mb;
 	//ZeroMemory(&mb, sizeof(SHMENUBARINFO));
 	//mb.cbSize = sizeof(SHMENUBARINFO);
 	//mb.hwndParent = g_Wnd;
@@ -1168,12 +1177,13 @@ handle_WM_SETTINGCHANGE(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	//if (!SHCreateMenuBar(&mb))
 	//	DEBUGMSG(DBG_W32, (L"Could not create menubar!\n"));
 	//g_hMenuBar = mb.hwndMB; //HGO
-	//XXX
-    //MoveWindow(g_Wnd, x, y, w, h, FALSE);
+	////XXX
+ //   MoveWindow(g_Wnd, x, y, w, h, FALSE);
 	//SetWindowPos(g_Wnd, HWND_TOPMOST, 0,0, 240,294, SWP_SHOWWINDOW);
 
-    //SHFullScreen(g_Wnd, SHFS_SHOWTASKBAR | SHFS_SHOWSIPBUTTON | SHFS_SHOWSTARTICON);
+ //   SHFullScreen(g_Wnd, SHFS_SHOWTASKBAR | SHFS_SHOWSIPBUTTON | SHFS_SHOWSTARTICON);
 	//SHFullScreen(g_Wnd, SHFS_HIDETASKBAR | SHFS_SHOWSIPBUTTON | SHFS_HIDESTARTICON);
+#endif
   }
   else
   {
@@ -1350,6 +1360,10 @@ WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         SHSipPreference(hWnd, SIP_UP);
       }
       return DefWindowProc(hWnd, message, wParam, lParam);
+	case WM_CREATE:
+		if(!g_fullscreen)
+			doCreateMenu(hWnd, g_Instance); //HGO
+		break;
     default:
       return DefWindowProc(hWnd, message, wParam, lParam);
   }
@@ -1461,8 +1475,6 @@ mi_create_window(void)
   DEBUGMSG(DBG_W32, (str));
   
   // SHDoneButton(g_Wnd, SHDB_HIDE); //HGO see WS_NONAVDONEBUTTON, SHFullScreen should be used in WM_ACTIVATE
-  if(!g_fullscreen)
-	doCreateMenu(); //HGO
 
   do_hide_taskbar(TRUE);
 

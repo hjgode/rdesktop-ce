@@ -31,6 +31,7 @@ BEGIN
     POPUP "File"
     BEGIN
         MENUITEM "Exit",                        ID_FILE_EXIT
+        MENUITEM "About",                       ID_FILE_ABOUT
     END
     MENUITEM "SIP",                         0
 END
@@ -71,6 +72,39 @@ BEGIN
     "\0"
 END
 
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_POCKETPC_PORTRAIT DIALOG  0, 0, 156, 177
+STYLE DS_SETFONT | DS_SETFOREGROUND | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    PUSHBUTTON      "Close",IDC_BUTTON_CLOSE,45,105,58,17
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_POCKETPC_PORTRAIT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 149
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 170
+    END
+END
 #endif    // APSTUDIO_INVOKED
 
 #endif    // English (U.S.) resources

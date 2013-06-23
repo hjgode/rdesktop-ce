@@ -216,6 +216,23 @@ int ExistFile(TCHAR* filename)
 }
 
 /*****************************************************************************/
+// PFCSipButtonShow
+// simple code to show/hide the SIP button
+void SipButtonShow( BOOL bShow )
+{
+HWND hWnd = FindWindow( _T( "MS_SIPBUTTON" ), NULL );
+if (hWnd == NULL)
+	return;
+
+if (bShow)
+	ShowWindow( hWnd, SW_SHOW );
+else
+	ShowWindow( hWnd, SW_HIDE );
+
+} // PFCSipButtonShow
+
+/*****************************************************************************/
+// menubar is only created if not fullscreen
 void doCreateMenu(HWND _hwndMain, HINSTANCE _hInstMain){
 	SHMENUBARINFO mb;
   if(g_hMenuBar==0)
@@ -223,17 +240,21 @@ void doCreateMenu(HWND _hwndMain, HINSTANCE _hInstMain){
 	memset(&mb,0,sizeof(SHMENUBARINFO));// ZeroMemory(&mb, sizeof(SHMENUBARINFO));
 	mb.cbSize = sizeof(SHMENUBARINFO);
 	mb.hwndParent = _hwndMain;
-	mb.hInstRes = _hInstMain;			   // Inst handle of app
-	mb.dwFlags = SHCMBF_HIDESIPBUTTON; //SHCMBF_EMPTYBAR; //SHCMBF_HMENU; //SHCMBF_EMPTYBAR;
+	mb.dwFlags = SHCMBF_HMENU; //SHCMBF_EMPTYBAR; //SHCMBF_HMENU; //SHCMBF_EMPTYBAR;
 	mb.nToolBarId = IDR_MENU1;	// HGO 0;                     // ID of toolbar resource
+	mb.hInstRes = _hInstMain;			   // Inst handle of app
 	mb.nBmpId = 0;                         // ID of bitmap resource
 	mb.cBmpImages = 0;                     // Num of images in bitmap 
-	//mb.hwndMB = 0;                         // Handle of bar returned
+	mb.hwndMB = 0;                         // Handle of bar returned
 
-	DEBUGMSG(1, (L"Main: %i, Inst: %i\n", _hwndMain, _hInstMain));
+	DEBUGMSG(1, (L"Main: 0x%08x, Inst: 0x%08x\n", _hwndMain, _hInstMain));
 	if (!SHCreateMenuBar(&mb))
 		DEBUGMSG(DBG_W32, (L"Could not create menubar! ERROR=%i\n", GetLastError()));	//120L = not supported
+	else
+		DEBUGMSG(DBG_W32, (L"Menubar created! mb.hwndMB=0x%08x\n", mb.hwndMB));	//120L = not supported
 	
+	SipButtonShow(TRUE);
+
 	//SHFullScreen (hwndMain, SHFS_SHOWSIPBUTTON);
 	g_hMenuBar = mb.hwndMB; //HGO
   }
@@ -1144,6 +1165,10 @@ handle_WM_SETTINGCHANGE(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   int h;
   int style;
 
+  DEBUGMSG(1, (L"handle_WM_SETTINGCHANGE...\n"));
+
+  SipButtonShow(TRUE);
+
 	return 0; //HGO we dont resize the window
 
   ZeroMemory(&si, sizeof(SIPINFO));
@@ -1158,6 +1183,7 @@ handle_WM_SETTINGCHANGE(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   //HGO DestroyWindow(SHFindMenuBar(g_Wnd));
   if (si.fdwFlags & SIPF_ON)
   {
+	DEBUGMSG(1, (L"\thandle_WM_SETTINGCHANGE g_sip_up = 1\n"));
     g_sip_up = 1; /* used for WM_SETFOCUS */
 
 #ifdef USE_MENUBAR
@@ -1188,6 +1214,7 @@ handle_WM_SETTINGCHANGE(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   else
   {
     g_sip_up = 0;
+	DEBUGMSG(1, (L"\thandle_WM_SETTINGCHANGE g_sip_up = 1\n"));
     if (g_fullscreen)
     {
       MoveWindow(g_Wnd, 0, 0, g_screen_width, g_screen_height, FALSE);
@@ -1200,6 +1227,7 @@ handle_WM_SETTINGCHANGE(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
          g_height <= g_screen_height) ||
         (!g_fullscreen && g_width <= w && g_height <= h))
     {
+		//Add scrollbars
       style = GetWindowLong(g_Wnd, GWL_STYLE);
       if (style & WS_HSCROLL)
       {
@@ -1330,6 +1358,7 @@ WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 //#endif
     case WM_PAINT:
+		SipButtonShow(TRUE);
       return handle_WM_PAINT(hWnd, message, wParam, lParam);
     case WM_DESTROY:
 		do_hide_taskbar(FALSE);
@@ -1405,6 +1434,7 @@ mi_create_window(void)
   int winBorder;
   BOOL iRet;
 	HWND tHwnd=0;
+	INITCOMMONCONTROLSEX icex;	//for menubar and SIP!
 
   if (g_Wnd != 0 || g_Instance != 0)
   {
@@ -1433,6 +1463,12 @@ mi_create_window(void)
 	  DEBUGMSG(DBG_W32, (L"Failed to register window class"));
 	  return 0; /* Failed to register window class */
   }
+
+    // Load the command bar common control class. For menubar etc.
+    icex.dwSize = sizeof (INITCOMMONCONTROLSEX);
+    icex.dwICC = ICC_BAR_CLASSES;
+    InitCommonControlsEx (&icex);
+
   //SystemParametersInfo(SPI_GETWORKAREA, 0, &rc, 0);	//not available in WINCE
 
   //get local screen size

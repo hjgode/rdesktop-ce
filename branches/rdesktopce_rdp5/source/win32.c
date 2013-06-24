@@ -241,7 +241,16 @@ void doCreateMenu(HWND _hwndMain, HINSTANCE _hInstMain){
 	mb.cbSize = sizeof(SHMENUBARINFO);
 	mb.hwndParent = _hwndMain;
 	mb.dwFlags = SHCMBF_HMENU; //SHCMBF_EMPTYBAR; //SHCMBF_HMENU; //SHCMBF_EMPTYBAR;
+	/*
+	The only difference is we specify the popup menu identifier for nToolBarId member instead 
+	of the menu bar identifier and we also set the SHCMBF_HMENU flag. When SHCMBF_HMENU flag 
+	is not specified then the nToolBarId value is treated as a toolbar identifer which creates 
+	our usual softkey bar with left and right softkeys. If the flag is set then nToolBarId is 
+	treated as a menu identifier. Just a regular menu bar with menus and submenus. 
+	[http://geekswithblogs.net/TechTwaddle/archive/2009/07/09/fun-with-menus.aspx]
+	*/
 	mb.nToolBarId = IDR_MENU1;	// HGO 0;                     // ID of toolbar resource
+	//mb.nToolBarId = IM_KEYBOARD_LAYOUT; //will show blank menu with system 'New' item and keyboard
 	mb.hInstRes = _hInstMain;			   // Inst handle of app
 	mb.nBmpId = 0;                         // ID of bitmap resource
 	mb.cBmpImages = 0;                     // Num of images in bitmap 
@@ -266,6 +275,8 @@ static LRESULT handle_WM_COMMAND(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 			//SetCursor(LoadCursor(NULL, IDC_WAIT));
 			//ShowCursor(TRUE);
 			//UpdateWindow(hWnd);
+			MessageBox(hWnd, L"Currently disabled", L"Exit rdesktop?", MB_SETFOREGROUND|MB_TOPMOST|MB_ICONSTOP);
+			return 0;
 			PostQuitMessage(-33);
 			return 0;
 		default:

@@ -616,6 +616,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalOptions="/SUBSYSTEM:WINDOWSCE,4.2"
 				AdditionalDependencies="lib\ssleay32.lib lib\libeay32.lib lib\wcecompat.lib"
 				OutputFile="$(OutDir)/rdesktopce.exe"
 				LinkIncremental="1"

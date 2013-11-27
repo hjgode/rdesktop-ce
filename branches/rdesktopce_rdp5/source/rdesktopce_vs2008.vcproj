@@ -527,6 +527,7 @@
 				AdditionalDependencies="lib\ssleay32.lib lib\libeay32.lib lib\wcecompat.lib"
 				OutputFile="$(OutDir)/rdesktopce.exe"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="D:\svn\rdesktopce_rdp5\rdesktopce_rdp5\source\lib"
 				DelayLoadDLLs="$(NOINHERIT)"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/rdesktopce.pdb"

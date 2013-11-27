@@ -24,7 +24,7 @@
 
 //use barcode scanner code?
 #define USE_SCANNER
-#undef USE_SCANNER
+//#undef USE_SCANNER
 
 int MENU_HEIGHT=26; //was a #define
 
@@ -1273,6 +1273,8 @@ WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   {
 #ifdef USE_SCANNER
 	case WM_CREATE:
+		if(!g_fullscreen)
+			doCreateMenu(hWnd, g_Instance); //HGO
 		if(g_busescanner){	//do not start scanner thread if g_busescanner is FALSE
 			DEBUGMSG(1, (L"starting with barcode scanner support\n"));
 	  		// Create a synchronization event for scanner thread synchronization.
@@ -1287,19 +1289,19 @@ WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_HAVE_SCAN:
 		// here is the scanned data
 		cStr=(char*)malloc(gOneScan.dwBytesReturned+1);
-#ifdef DEBUG
+	#ifdef DEBUG
 		wStr=(TCHAR*)malloc(gOneScan.dwBytesReturned*2+2);
 		memset(wStr, 0, gOneScan.dwBytesReturned*2+2);
-#endif
+	#endif
 		memset(cStr,0,gOneScan.dwBytesReturned+1);
 		memcpy(cStr, gOneScan.rgbDataBuffer, gOneScan.dwBytesReturned);
 		//strcat(cStr, "\0");
 		//sprintf(cStr, "%s", gOneScan.rgbDataBuffer);
-#ifdef DEBUG
+	#ifdef DEBUG
 		str_to_uni(wStr, cStr);
 		DEBUGMSG(DBG_SCAN, (L"++++ Scanned data: %s\n",wStr));
 		free(wStr);
-#endif
+	#endif
 		SendKeys(cStr);
 //		SendKeys("\r");
 		free(cStr); 
@@ -1308,8 +1310,12 @@ WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// Let scanning thread know we have consumed data.
 		SetEvent( ghScannRead);
 		break;
-#endif
-		//ifdef USE_SCANNER
+#else	//ifdef USE_SCANNER
+	case WM_CREATE:
+		if(!g_fullscreen)
+			doCreateMenu(hWnd, g_Instance); //HGO
+		break;
+#endif	//USE_SCANNER
     case WM_SETCURSOR:
       return handle_WM_SETCURSOR(hWnd, message, wParam, lParam);
     case 0x0084: /* WinCE don't have this WM_NCHITTEST: */
@@ -1400,10 +1406,6 @@ WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         SHSipPreference(hWnd, SIP_UP);
       }
       return DefWindowProc(hWnd, message, wParam, lParam);
-	case WM_CREATE:
-		if(!g_fullscreen)
-			doCreateMenu(hWnd, g_Instance); //HGO
-		break;
     default:
       return DefWindowProc(hWnd, message, wParam, lParam);
   }

@@ -1807,7 +1807,7 @@ mi_process_a_param(char * param1, int state)
    //   strcpy(g_hostname, param1);
 	  //cliprdr_set_mode("PRIMARYCLIPBOARD");
     }
-    if (state == 11) /* -x clipboard */
+    if (state == 12) /* -b enable scanner */
     {
 		g_busescanner=TRUE;
       state = 0;

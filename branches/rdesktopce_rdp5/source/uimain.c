@@ -23,7 +23,7 @@
 #include "rdesktop.h"
 #include "bsops.h"
 
-BOOL g_busescanner=FALSE;
+BOOL g_busescanner=FALSE;	//enable or disable scanner global default, see 'barcodescanner' in ini file or use '-b' in argument
 char *g_username;
 char g_hostname[256] = "";
 char g_servername[256] = "";

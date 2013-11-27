@@ -31,9 +31,14 @@
 	#include <winsock2.h>	//if WIN32 we need winsock2
 #endif
 
+// do not forget to add 'inc' dir to linker
 #include <openssl/ssl.h>
 #include <openssl/x509.h>
 #include <openssl/err.h>
+#pragma comment (lib, "libeay32.lib")
+#pragma comment (lib, "ssleay32.lib")
+#pragma comment (lib, "wcecompat.lib")
+#pragma comment (lib, "wcecompatex.lib")
 
 #include "rdesktop.h"
 

@@ -15,7 +15,7 @@ Usage:
       [-s shell] [-n host name]
       server-name-or-ip
   
-  not supported: [-c working directory], [-f]  
+  not supported: [-c working directory], [-f] , clipboard
   
   You can use a config file in the current or root directory
   called WinRDesktop.ini
@@ -74,4 +74,7 @@ r59			version before TLS SSL patch
 
 r60
 			added SSL(TLS1.0) support analog to rdesktop 1.7.1
-			
+r78
+			fixed some USE_SCANNER compilation issues, new binaries
+			rdesktopce_bscan.exe	03.12.2013 08:17:50
+			rdesktopce_nobscan.exe	03.12.2013 08:08:27

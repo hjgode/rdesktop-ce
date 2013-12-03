@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "winrdesktop", "winrdesktop.vcproj", "{CCD61C07-2DAF-49E9-835D-41DAA954B102}"
 EndProject
 Global
@@ -250,12 +250,12 @@ Global
 		{CCD61C07-2DAF-49E9-835D-41DAA954B102}.winrdesktop release|STANDARDSDK_500 (x86).Build.0 = winrdesktop release|STANDARDSDK_500 (x86)
 		{CCD61C07-2DAF-49E9-835D-41DAA954B102}.winrdesktop release|STANDARDSDK_500 (x86).Deploy.0 = winrdesktop release|STANDARDSDK_500 (x86)
 		{CCD61C07-2DAF-49E9-835D-41DAA954B102}.winrdesktop release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).ActiveCfg = winrdesktop release|Windows Mobile 5.0 Pocket PC SDK 2 (ARMV4I)
+		{CCD61C07-2DAF-49E9-835D-41DAA954B102}.winrdesktop release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).Build.0 = winrdesktop release|Windows Mobile 5.0 Pocket PC SDK 2 (ARMV4I)
 		{CCD61C07-2DAF-49E9-835D-41DAA954B102}.winrdesktop release|Windows Mobile 5.0 Pocket PC SDK 2 (ARMV4I).ActiveCfg = winrdesktop release|Windows Mobile 5.0 Pocket PC SDK 2 (ARMV4I)
 		{CCD61C07-2DAF-49E9-835D-41DAA954B102}.winrdesktop release|Windows Mobile 5.0 Pocket PC SDK 2 (ARMV4I).Build.0 = winrdesktop release|Windows Mobile 5.0 Pocket PC SDK 2 (ARMV4I)
 		{CCD61C07-2DAF-49E9-835D-41DAA954B102}.winrdesktop release|Windows Mobile 5.0 Pocket PC SDK 2 (ARMV4I).Deploy.0 = winrdesktop release|Windows Mobile 5.0 Pocket PC SDK 2 (ARMV4I)
 		{CCD61C07-2DAF-49E9-835D-41DAA954B102}.winrdesktop release|Windows Mobile 6 Professional SDK (ARMV4I).ActiveCfg = winrdesktop release|Windows Mobile 6 Professional SDK (ARMV4I)
 		{CCD61C07-2DAF-49E9-835D-41DAA954B102}.winrdesktop release|Windows Mobile 6 Professional SDK (ARMV4I).Build.0 = winrdesktop release|Windows Mobile 6 Professional SDK (ARMV4I)
-		{CCD61C07-2DAF-49E9-835D-41DAA954B102}.winrdesktop release|Windows Mobile 6 Professional SDK (ARMV4I).Deploy.0 = winrdesktop release|Windows Mobile 6 Professional SDK (ARMV4I)
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

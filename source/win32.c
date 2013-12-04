@@ -536,6 +536,7 @@ mi_check_modifier(void)
 
   code = mi_read_keyboard_state();
   ui_set_modifier_state(code);
+	DEBUGMSG(DBK_KEY, (L"mi_check_modifier: keyboardstate=0x%08x: \n", code));
 }
 
 /*****************************************************************************/

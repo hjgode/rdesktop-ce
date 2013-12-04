@@ -614,12 +614,12 @@ read_keyboard_state(void)
 /*****************************************************************************/
 void
 ui_set_modifier_state(int code)
-
 {
 
   //error("%8.8x", code);
 
   rdp_send_input(0, RDP_INPUT_SYNCHRONIZE, 0, (uint16) code, 0);
+	DEBUGMSG(DBK_KEY, (L"ui_set_modifier_state:RDP_INPUT_SYNCHRONIZE keyboardstate=0x%08x: \n", code));
 
 }
 

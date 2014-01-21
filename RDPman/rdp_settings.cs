@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 
 namespace RDPman
 {
@@ -21,10 +22,10 @@ namespace RDPman
         public int _iFullscreen = 0;
 
         //-u user name
-        public string _sUser = "";
+        public string _sUser = "hgode";
 
         //-p password
-        public string _sPass = "";
+        public string _sPass = "Chopper+6";
 
         //-d domain
         public string _sDomain = "";
@@ -36,7 +37,7 @@ namespace RDPman
         public string _sWorkingDir = "";
 
         //-n hostname
-        public string _sHostname = "";
+        public string _sHostname = "192.168.0.112";
 
         //-x clipboard, currently not supported
         public int _iClipboard = 0;
@@ -44,5 +45,143 @@ namespace RDPman
         //-b barcode reader support
         public int _iBarcodeReaderSupport = 0;
 
+        public string _sRdekstopCE = @"\Program Files\rdesktopce\rdesktopce.exe";
+
+        public int _bSavePassword = 1;
+
+        public string getArgList()
+        {
+            string sRet = "";
+            //-g
+            sRet += " -g "+_iWidth.ToString()+"x"+_iHeight.ToString();
+            sRet += " -n " + _sHostname + " -t " + _iPort.ToString();
+            sRet += " -u " + _sUser + " -p " + _sPass;
+            if (_sDomain.Length > 0)
+                sRet += " -d " + _sDomain;
+            if (_sShell.Length > 0)
+                sRet += " -s " + _sShell;
+            if (_sWorkingDir.Length > 0)
+                sRet += " -c " + _sWorkingDir;
+
+            if (_iBarcodeReaderSupport == 1)
+                sRet += " -b";
+
+            if (_iFullscreen == 1)
+                sRet += " -f ";
+
+            sRet += " -a " + _iBPP.ToString();
+
+            return sRet;
+        }
+
+        public string getRDPstring()
+        {
+            StringBuilder sb = new StringBuilder();
+            int i = 0;
+            string sLine = rdpLines[0]; 
+            while (sLine != null)
+            {
+                if (sLine.StartsWith("WorkingDir"))
+                {
+                        sb.Append(String.Format(sLine, _sWorkingDir));
+                }
+                else if (sLine.StartsWith("AlternateShell"))
+                {
+                        sb.Append(String.Format(sLine, _sShell));
+                }
+                else if (sLine.StartsWith("EnableClipboardRedirection"))
+                {
+                        sb.Append(String.Format(sLine, _iClipboard));
+                }
+                else if (sLine.StartsWith("Domain"))
+                {
+                        sb.Append(String.Format(sLine, _sDomain));
+                }
+                else if (sLine.StartsWith("MCSPort"))
+                {
+                    sb.Append(String.Format(sLine, _iPort));
+                }
+                else if (sLine.StartsWith("Password"))
+                {
+                    if (_sPass.Length > 0)
+                    {
+                        string sPassEnc = rdp_password.EncryptRDPPassword(_sPass);
+                        //here:         0200000000000000000000000000000000000000000000000800000072006400700000000E660000100000001000000031C03CFAF193C0C61AA5346F40DB08F800000000048000001000000010000000891E0B7D71DCAB69764E9CA05E25CEB6200000004EEEE6F38BD74AC8E4CC6C0661235AA1221B6BF14C191E27260FD7F99322E5C514000000F539F077730E2DBFDE6B368D9F45B67AAED4E4FF"
+                        //rdp:          0200000000000000000000000000000000000000000000000800000072006400700000000E66000010000000100000001E392BB875946E7281F1D962E2CBA05900000000048000001000000010000000BEBDA63E164615F22450CEC59F37D46B200000003BC01FF8CF7EC256730228E21FA4434597E6FF98EBC66B4B1D96EA4E76F7C6AA14000000BCA27291CE4AD6B9B1C3BD3CE397D53647213EC4
+                        //rdp_decrypt:  0200000000000000000000000000000000000000000000000800000072006400700000000E66000010000000100000001E392BB875946E7281F1D962E2CBA05900000000048000001000000010000000BEBDA63E164615F22450CEC59F37D46B200000003BC01FF8CF7EC256730228E21FA4434597E6FF98EBC66B4B1D96EA4E76F7C6AA14000000BCA27291CE4AD6B9B1C3BD3CE397D53647213EC4
+
+                        //string sPassEnc = RDPcrypt.CryptTest.RDPencrypt(_sPass);
+                        sb.Append(String.Format(sLine, sPassEnc));
+                    }
+                    else
+                        sb.Append(String.Format(sLine, ""));
+                }
+                else
+                    sb.Append(sLine);
+
+                i++;
+                sLine = rdpLines[i];
+            };
+            return sb.ToString();
+        }
+
+        public bool writeFile(string sFile)
+        {
+            bool bRet = false;
+            using (StreamWriter sw = new StreamWriter(sFile))
+            {
+                // Add some text to the file.
+                sw.Write(this.getRDPstring());
+                bRet = true;
+            }
+            return bRet;
+        }
+        string[] rdpLines = new string[]{
+	        "\xFF\xFE", //this is NOT used, it is the Unicode identifier
+	        //new with 3. dec 2013
+	        "WorkingDir:s:{0}\r\n",
+	        "AlternateShell:s:{0}\r\n",	// NOT IMPLEMENTED IN RDM!
+	        "EnableClipboardRedirection:i:{0}\r\n",	//0 = disabled, 1 = enable clipboard sharing, see also g_bEnableClipboardRedirection
+	        "RDPIdleTimeout:i:0\r\n",				// NOT IMPLEMENTED IN RDM!
+	        //older...
+	        "Domain:s:{0}\r\n",
+	        "GrabFocusOnConnect:i:0\r\n",
+	        "MinutesToIdleTimeout:i:0\r\n", //was 5, has no function, tested with 0 but session did timeout anyway
+	        "DisableFileAccess:i:0\r\n",
+	        "BBarEnabled:i:0\r\n",
+	        "EnablePrinterRedirection:i:0\r\n",
+	        "EnableSCardRedirection:i:1\r\n",
+	        "AutoReconnectEnabled:i:1\r\n",
+	        "EnableDriveRedirection:i:0\r\n",	//EnableDriveRedirection=1, enables access to local files inside the host session
+	        "EnablePortRedirection:i:0\r\n",
+	        "AudioRedirectionMode:i:2\r\n",		//0=Redirect sounds to the client, 1=Play sounds at the remote computer, 2=Disable sound redirection; do not play sounds at the server
+	        "BitmapPersistenceEnabled:i:0\r\n",
+	        "BBarShowPinBtn:i:0\r\n",
+	        "Compress:i:1\r\n",
+	        "KeyboardHookMode:i:0\r\n",
+	        "MaxReconnectAttempts:i:20\r\n",
+	        "Disable Wallpaper:i:1\r\n",
+	        "Disable Full Window Drag:i:1\r\n",
+	        "Disable Menu Anims:i:1\r\n",
+	        "Disable Themes:i:0\r\n",
+	        "KeyboardLayoutString:s:0xE0010409\r\n",
+	        "KeyboardType:i:4\r\n",
+	        "KeyboardSubType:i:0\r\n",
+	        "KeyboardFunctionKey:i:12\r\n",
+	        "BitmapCacheSize:i:21\r\n",
+	        "BitmapPersistCacheSize:i:1\r\n",
+	        "Keyboard Layout:s:00000409\r\n",
+	        "MCSPort:i:{0}\r\n", // 3389
+
+	        "Password:b:{0}\r\n", // 0200000000000000000000000000000000000000000000000800000072006400700000000E660000100000001000000042CC2095244E1C87923AC5BC2014D0A6000000000480000010000000100000004207CC82911829FA8E78AE77404B256820000000D1759CC8A4025896DC5C7599484D7D0CCEF9C4BBBF5A44DC5D766B25A02E32001400000011F4A0E6AD9236475C1AD25AE113EE331D893929
+	        "ServerName:s:{0}\r\n",
+	        "UserName:s:{0}\r\n",
+	        "SavePassword:i:{0}\r\n",
+	        "DesktopHeight:i:{0}\r\n",
+	        "DesktopWidth:i:{0}\r\n",
+	        "ScreenStyle:i:{0}\r\n",  //0=no fullscreen + no fit, 1= fit to screen+no fullscreen, 2=fullscreen+no fit, 3=fit+fullscreen
+	        "ColorDepthID:i:{0}\r\n", //changed from {0} to {0} with version 4
+	        null
+        };
     }
 }

@@ -74,6 +74,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="rdp_crypt.cs" />
     <Compile Include="rdp_password.cs" />
     <Compile Include="rdp_settings.cs" />
   </ItemGroup>

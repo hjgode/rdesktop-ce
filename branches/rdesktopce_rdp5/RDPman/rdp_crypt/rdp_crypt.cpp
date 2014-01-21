@@ -16,19 +16,21 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 {
 	switch(ul_reason_for_call){
 		case DLL_PROCESS_ATTACH:
-		case DLL_THREAD_ATTACH:
 			g_szPassDecrypted=(TCHAR*)malloc(2048);
 			memset(g_szPassDecrypted,0, 2048);
 			g_szPassEncrypted=(TCHAR*)malloc(2048);
 			memset(g_szPassEncrypted,0, 2048);
 			return TRUE;
 			break;
+		case DLL_THREAD_ATTACH:
+			return TRUE;
 		case DLL_PROCESS_DETACH:
-		case DLL_THREAD_DETACH:
 			free(g_szPassDecrypted);
 			free(g_szPassEncrypted);
 			return TRUE;
 			break;
+		case DLL_THREAD_DETACH:
+			return TRUE;
 		default:
 			return FALSE;
 	}
@@ -39,16 +41,19 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 int decryptPassword(TCHAR* szPassEncryptedHEX, TCHAR* szPassDecrypted, DWORD* dwSizeOut){
 	int iRet=0;
 	DWORD nBytes=wcslen(szPassEncryptedHEX);
-	BYTE* pByte = new BYTE();
+	BYTE* pByte = new BYTE[1024];
+	TCHAR* szTemp=new TCHAR[1024];
 
 	if(hexWToBin(szPassEncryptedHEX, pByte)==0){
-		decryptPWDfromByte(pByte, nBytes, szPassDecrypted);
-		wcsncpy(g_szPassDecrypted, szPassDecrypted, wcslen(szPassDecrypted));
+		decryptPWDfromByte(pByte, nBytes, szTemp);
+		wcsncpy(g_szPassDecrypted, szTemp, wcslen(szTemp));
+		wcsncpy(szPassDecrypted, szTemp, wcslen(szTemp));
 		*dwSizeOut=wcslen(szPassDecrypted);
 	}
 	else
 		iRet=-1;
 
+	delete(szTemp);
 	delete(pByte);
 	return iRet;
 }

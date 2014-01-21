@@ -49,7 +49,6 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabHost = new System.Windows.Forms.TabPage();
             this.tabScreen = new System.Windows.Forms.TabPage();
-            this.button1 = new System.Windows.Forms.Button();
             this.tabProg = new System.Windows.Forms.TabPage();
             this.txtHost = new System.Windows.Forms.TextBox();
             this.txtPort = new System.Windows.Forms.TextBox();
@@ -63,6 +62,8 @@
             this.cboColorDepth = new System.Windows.Forms.ComboBox();
             this.chkFullscreen = new System.Windows.Forms.CheckBox();
             this.txtDomain = new System.Windows.Forms.TextBox();
+            this.chkBarcodeReader = new System.Windows.Forms.CheckBox();
+            this.chkSavePassword = new System.Windows.Forms.CheckBox();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -107,6 +108,7 @@
             // mnuStart
             // 
             this.mnuStart.Text = "Start";
+            this.mnuStart.Click += new System.EventHandler(this.mnuStart_Click);
             // 
             // tabControl1
             // 
@@ -123,13 +125,13 @@
             // tabHost
             // 
             this.tabHost.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+            this.tabHost.Controls.Add(this.chkSavePassword);
             this.tabHost.Controls.Add(this.txtDomain);
             this.tabHost.Controls.Add(this.txtPass);
             this.tabHost.Controls.Add(this.txtUser);
             this.tabHost.Controls.Add(this.txtPort);
             this.tabHost.Controls.Add(this.txtHost);
             this.tabHost.Controls.Add(label12);
-            this.tabHost.Controls.Add(this.button1);
             this.tabHost.Controls.Add(label4);
             this.tabHost.Controls.Add(label3);
             this.tabHost.Controls.Add(label2);
@@ -193,17 +195,10 @@
             label4.Text = "pass:";
             label4.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(74, 187);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(92, 34);
-            this.button1.TabIndex = 4;
-            this.button1.Text = "Connect";
-            // 
             // tabProg
             // 
             this.tabProg.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.tabProg.Controls.Add(this.chkBarcodeReader);
             this.tabProg.Controls.Add(this.btnBrowse);
             this.tabProg.Controls.Add(this.label5);
             this.tabProg.Controls.Add(this.txtProgramLocation);
@@ -353,7 +348,7 @@
             // label12
             // 
             label12.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
-            label12.Location = new System.Drawing.Point(8, 138);
+            label12.Location = new System.Drawing.Point(8, 171);
             label12.Name = "label12";
             label12.Size = new System.Drawing.Size(83, 17);
             label12.Text = "domain:";
@@ -361,10 +356,26 @@
             // 
             // txtDomain
             // 
-            this.txtDomain.Location = new System.Drawing.Point(111, 138);
+            this.txtDomain.Location = new System.Drawing.Point(111, 171);
             this.txtDomain.Name = "txtDomain";
             this.txtDomain.Size = new System.Drawing.Size(122, 21);
             this.txtDomain.TabIndex = 5;
+            // 
+            // chkBarcodeReader
+            // 
+            this.chkBarcodeReader.Location = new System.Drawing.Point(8, 72);
+            this.chkBarcodeReader.Name = "chkBarcodeReader";
+            this.chkBarcodeReader.Size = new System.Drawing.Size(223, 21);
+            this.chkBarcodeReader.TabIndex = 3;
+            this.chkBarcodeReader.Text = "enable BarcodeReader support";
+            // 
+            // chkSavePassword
+            // 
+            this.chkSavePassword.Location = new System.Drawing.Point(111, 139);
+            this.chkSavePassword.Name = "chkSavePassword";
+            this.chkSavePassword.Size = new System.Drawing.Size(121, 20);
+            this.chkSavePassword.TabIndex = 7;
+            this.chkSavePassword.Text = "save password";
             // 
             // Form1
             // 
@@ -399,7 +410,6 @@
         private System.Windows.Forms.TextBox txtUser;
         private System.Windows.Forms.TextBox txtPort;
         private System.Windows.Forms.TextBox txtHost;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TabPage tabProg;
         private System.Windows.Forms.Button btnBrowse;
         private System.Windows.Forms.Label label5;
@@ -409,6 +419,8 @@
         private System.Windows.Forms.ComboBox cboColorDepth;
         private System.Windows.Forms.CheckBox chkFullscreen;
         private System.Windows.Forms.TextBox txtDomain;
+        private System.Windows.Forms.CheckBox chkBarcodeReader;
+        private System.Windows.Forms.CheckBox chkSavePassword;
     }
 }
 

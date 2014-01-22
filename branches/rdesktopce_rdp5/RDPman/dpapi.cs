@@ -617,6 +617,10 @@ public class DPAPI
                                      byte[] entropyBytes,
                                  out string description)
     {
+        if(cipherTextBytes==null || cipherTextBytes.Length==0){
+            description="";
+            return new byte[0];
+            }
         // Create BLOBs to hold data.
         DATA_BLOB plainTextBlob  = new DATA_BLOB();
         DATA_BLOB cipherTextBlob = new DATA_BLOB();

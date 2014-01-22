@@ -61,6 +61,11 @@ namespace Utility
 		/// <returns>byte array, in the same left-to-right order as the hexString</returns>
 		public static byte[] GetBytes(string hexString, out int discarded)
 		{
+            if (hexString == null)
+            {
+                discarded = 0;
+                return new byte[0];
+            }
 			discarded = 0;
 			string newString = "";
 			char c;

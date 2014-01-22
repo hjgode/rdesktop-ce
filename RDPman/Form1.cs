@@ -17,46 +17,46 @@ namespace RDPman
         {
             InitializeComponent();
             _settings = new rdp_settings();
-            initForm();
+            updateForm();
         }
 
-        void initForm()
+        void updateForm()
         {
-            txtHost.Text = _settings._sHostname;
-            txtPass.Text = _settings._sPass;
-            if (_settings._iSavePassword == 1)
+            txtHost.Text = _settings.ServerName;
+            txtPass.Text = DPAPI.Decrypt( _settings.Password );
+            if (_settings.SavePassword == 1)
                 chkSavePassword.Checked = true;
             else
                 chkSavePassword.Checked = false;
 
-            txtPort.Text = _settings._iPort.ToString();
-            txtUser.Text = _settings._sUser;
-            txtDomain.Text = _settings._sDomain;
+            txtPort.Text = _settings.MCSPort.ToString();
+            txtUser.Text = _settings.UserName;
+            txtDomain.Text = _settings.Domain;
 
-            txtWidth.Text = _settings._iWidth.ToString();
-            txtHeight.Text = _settings._iHeight.ToString();
-            setBPP(_settings._iBPP);
-            if(_settings._iFullscreen==1)
+            txtWidth.Text = _settings.DesktopHeight.ToString();
+            txtHeight.Text = _settings.DesktopWidth.ToString();
+            setBPP(_settings.ColorDepthID);
+            if(_settings.ScreenStyle==1)
                 chkFullscreen.Checked = true;
             else
                 chkFullscreen.Checked = false;
 
-            if (_settings._iBarcodeReaderSupport == 1)
+            if (_settings.usebarcodereader == 1)
                 chkBarcodeReader.Checked = true;
             else
                 chkBarcodeReader.Checked = false;
 
-            txtProgramLocation.Text = _settings._sRdekstopCE;
+            txtProgramLocation.Text = _settings.rdesktopce;
         }
 
         void updateSettings()
         {
-            _settings._sHostname = txtHost.Text;
-            _settings._sPass = txtPass.Text;
+            _settings.ServerName = txtHost.Text;
+            _settings.Password = txtPass.Text;
             try
             {
                 int iP = Convert.ToInt16(txtPort.Text);
-                _settings._iPort = iP;
+                _settings.MCSPort = iP;
             }
             catch (Exception)
             {
@@ -65,17 +65,17 @@ namespace RDPman
                 txtPort.Focus();
                 return;
             }
-            _settings._sUser = txtUser.Text;
-            if(_settings._iSavePassword==1)
-                _settings._sPass = txtPass.Text;
+            _settings.UserName = txtUser.Text;
+            if(_settings.SavePassword==1)
+                _settings.Password = txtPass.Text;
             else
-                _settings._sPass = "";
+                _settings.Password = "";
 
-            _settings._sDomain = txtDomain.Text;
+            _settings.Domain = txtDomain.Text;
             try
             {
                 int iW = Convert.ToInt16(txtWidth.Text);
-                _settings._iWidth = iW;
+                _settings.DesktopHeight = iW;
             }
             catch (Exception)
             {
@@ -87,7 +87,7 @@ namespace RDPman
             try
             {
                 int iH = Convert.ToInt16(txtHeight.Text);
-                _settings._iHeight = iH;
+                _settings.DesktopWidth = iH;
             }
             catch (Exception)
             {
@@ -96,17 +96,17 @@ namespace RDPman
                 txtHeight.Focus();
                 return;
             }
-            _settings._iBPP = getBPP();
+            _settings.ColorDepthID = getBPP();
             if (chkFullscreen.Checked)
-                _settings._iFullscreen = 1;
+                _settings.ScreenStyle = 1;
             else
-                _settings._iFullscreen = 0;
-            _settings._sRdekstopCE = txtProgramLocation.Text;
+                _settings.ScreenStyle = 0;
+            _settings.rdesktopce = txtProgramLocation.Text;
 
             if (chkBarcodeReader.Checked)
-                _settings._iBarcodeReaderSupport = 1;
+                _settings.usebarcodereader = 1;
             else
-                _settings._iBarcodeReaderSupport = 0;
+                _settings.usebarcodereader = 0;
 
         }
 
@@ -153,13 +153,50 @@ namespace RDPman
         {
             string sProg = "";
             Lime49.OpenFileDialog ofd = new Lime49.OpenFileDialog();
-            ofd.Filter = "*.exe";// "applications|*.exe|all files|*.*";
+            ofd.Filter = "exe";// "applications|*.exe|all files|*.*";
             
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 sProg = ofd.SelectedFile;
                 if(System.IO.File.Exists(sProg))
                     txtProgramLocation.Text = sProg;
+            }
+            ofd.Dispose();
+        }
+
+        private void mnuLoad_Click(object sender, EventArgs e)
+        {
+            string sXmlFile = "";
+            Lime49.OpenFileDialog ofd = new Lime49.OpenFileDialog();
+            ofd.Filter = "xml";// "applications|*.exe|all files|*.*";
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                sXmlFile = ofd.SelectedFile;
+                if (System.IO.File.Exists(sXmlFile))
+                {
+                    rdp_settings rdpsett = rdp_settings.loadSettings(sXmlFile);
+                    if (rdpsett != null)
+                    {
+                        _settings = rdpsett;
+                        updateForm();
+                    }
+                }
+            }
+            ofd.Dispose();
+
+        }
+
+        private void mnuSave_Click(object sender, EventArgs e)
+        {
+            string sXmlFile = "";
+            Lime49.OpenFileDialog ofd = new Lime49.OpenFileDialog();
+            ofd.Filter = "xml";// "applications|*.exe|all files|*.*";
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                sXmlFile = ofd.SelectedFile;
+                _settings.writeXML(sXmlFile);
             }
             ofd.Dispose();
         }

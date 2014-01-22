@@ -197,10 +197,12 @@
             // mnuLoad
             // 
             this.mnuLoad.Text = "Load";
+            this.mnuLoad.Click += new System.EventHandler(this.mnuLoad_Click);
             // 
             // mnuSave
             // 
             this.mnuSave.Text = "Save";
+            this.mnuSave.Click += new System.EventHandler(this.mnuSave_Click);
             // 
             // mnuStart
             // 

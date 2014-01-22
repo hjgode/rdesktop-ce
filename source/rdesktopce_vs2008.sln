@@ -5,8 +5,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rdesktopce", "rdesktopce_vs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RDPman", "..\RDPman\RDPman.csproj", "{9FC2BE7C-BE0F-4883-80D8-F39061354755}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rdp_crypt", "..\RDPman\rdp_crypt\rdp_crypt.vcproj", "{BFB50189-F520-4E23-82A8-ECD284AF140C}"
-EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -73,26 +71,6 @@ Global
 		{9FC2BE7C-BE0F-4883-80D8-F39061354755}.Release|STANDARDSDK_420 (ARMV4I).ActiveCfg = Release|Any CPU
 		{9FC2BE7C-BE0F-4883-80D8-F39061354755}.Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).ActiveCfg = Release|Any CPU
 		{9FC2BE7C-BE0F-4883-80D8-F39061354755}.Release|Windows Mobile 6 Professional SDK (ARMV4I).ActiveCfg = Release|Any CPU
-		{BFB50189-F520-4E23-82A8-ECD284AF140C}.Debug|Any CPU.ActiveCfg = Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
-		{BFB50189-F520-4E23-82A8-ECD284AF140C}.Debug|Mixed Platforms.ActiveCfg = Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
-		{BFB50189-F520-4E23-82A8-ECD284AF140C}.Debug|Mixed Platforms.Build.0 = Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
-		{BFB50189-F520-4E23-82A8-ECD284AF140C}.Debug|Mixed Platforms.Deploy.0 = Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
-		{BFB50189-F520-4E23-82A8-ECD284AF140C}.Debug|Pocket PC 2003 (ARMV4).ActiveCfg = Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
-		{BFB50189-F520-4E23-82A8-ECD284AF140C}.Debug|STANDARDSDK_420 (ARMV4I).ActiveCfg = Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
-		{BFB50189-F520-4E23-82A8-ECD284AF140C}.Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).ActiveCfg = Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
-		{BFB50189-F520-4E23-82A8-ECD284AF140C}.Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).Build.0 = Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
-		{BFB50189-F520-4E23-82A8-ECD284AF140C}.Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).Deploy.0 = Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
-		{BFB50189-F520-4E23-82A8-ECD284AF140C}.Debug|Windows Mobile 6 Professional SDK (ARMV4I).ActiveCfg = Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
-		{BFB50189-F520-4E23-82A8-ECD284AF140C}.Release|Any CPU.ActiveCfg = Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
-		{BFB50189-F520-4E23-82A8-ECD284AF140C}.Release|Mixed Platforms.ActiveCfg = Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
-		{BFB50189-F520-4E23-82A8-ECD284AF140C}.Release|Mixed Platforms.Build.0 = Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
-		{BFB50189-F520-4E23-82A8-ECD284AF140C}.Release|Mixed Platforms.Deploy.0 = Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
-		{BFB50189-F520-4E23-82A8-ECD284AF140C}.Release|Pocket PC 2003 (ARMV4).ActiveCfg = Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
-		{BFB50189-F520-4E23-82A8-ECD284AF140C}.Release|STANDARDSDK_420 (ARMV4I).ActiveCfg = Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
-		{BFB50189-F520-4E23-82A8-ECD284AF140C}.Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).ActiveCfg = Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
-		{BFB50189-F520-4E23-82A8-ECD284AF140C}.Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).Build.0 = Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
-		{BFB50189-F520-4E23-82A8-ECD284AF140C}.Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).Deploy.0 = Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
-		{BFB50189-F520-4E23-82A8-ECD284AF140C}.Release|Windows Mobile 6 Professional SDK (ARMV4I).ActiveCfg = Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

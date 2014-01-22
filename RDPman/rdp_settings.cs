@@ -47,7 +47,7 @@ namespace RDPman
 
         public string _sRdekstopCE = @"\Program Files\rdesktopce\rdesktopce.exe";
 
-        public int _bSavePassword = 1;
+        public int _iSavePassword = 1;
 
         public string getArgList()
         {
@@ -105,25 +105,78 @@ namespace RDPman
                 {
                     if (_sPass.Length > 0)
                     {
+                        #region TESTING
                         //string sPassEnc = rdp_password.EncryptRDPPassword(_sPass);
                         //here:         0200000000000000000000000000000000000000000000000800000072006400700000000E660000100000001000000031C03CFAF193C0C61AA5346F40DB08F800000000048000001000000010000000891E0B7D71DCAB69764E9CA05E25CEB6200000004EEEE6F38BD74AC8E4CC6C0661235AA1221B6BF14C191E27260FD7F99322E5C514000000F539F077730E2DBFDE6B368D9F45B67AAED4E4FF"
                         //rdp:          0200000000000000000000000000000000000000000000000800000072006400700000000E66000010000000100000001E392BB875946E7281F1D962E2CBA05900000000048000001000000010000000BEBDA63E164615F22450CEC59F37D46B200000003BC01FF8CF7EC256730228E21FA4434597E6FF98EBC66B4B1D96EA4E76F7C6AA14000000BCA27291CE4AD6B9B1C3BD3CE397D53647213EC4
                         //rdp_decrypt:  0200000000000000000000000000000000000000000000000800000072006400700000000E66000010000000100000001E392BB875946E7281F1D962E2CBA05900000000048000001000000010000000BEBDA63E164615F22450CEC59F37D46B200000003BC01FF8CF7EC256730228E21FA4434597E6FF98EBC66B4B1D96EA4E76F7C6AA14000000BCA27291CE4AD6B9B1C3BD3CE397D53647213EC4
 
-                        //using a DLL
-                        string sPassEnc = rdp_crypt.encrypt(_sPass);
-                        string sPassClear = rdp_crypt.decrypt(sPassEnc);
+                        ////using a DLL
+                        //string sPassEnc = rdp_crypt.encrypt(_sPass);
+                        //string sPassClear = rdp_crypt.decrypt(sPassEnc);
                         // gives        0200000000000000000000000000000000000000000000000800000072006400700000000e6600001000000010000000c7b7d85faf8e1ead57ad6698aef297ab00000000048000001000000010000000d78d3961ef6071a94af0732d75011c8720000000cff51a599a6e3794062c03e7459d0a97f4e29660e2183a63e1e2e7e9f304ae51140000002ef45194eea70f3133f05f8df7f5d1f5b5da267c
                         //rdp:          0200000000000000000000000000000000000000000000000800000072006400700000000E66000010000000100000001E392BB875946E7281F1D962E2CBA05900000000048000001000000010000000BEBDA63E164615F22450CEC59F37D46B200000003BC01FF8CF7EC256730228E21FA4434597E6FF98EBC66B4B1D96EA4E76F7C6AA14000000BCA27291CE4AD6B9B1C3BD3CE397D53647213EC4
 
                         //string sPassEnc = RDPcrypt.CryptTest.RDPencrypt(_sPass);
-                        sb.Append(String.Format(sLine, sPassEnc));
+                        string sEncrypted = DPAPI.Encrypt(DPAPI.KeyType.UserKey, _sPass, string.Empty, "psw");
+                        //MachineKey: 0200000000000000000000000000000000000000040000000800000072006400700000000E6600001000000010000000ABD068CB6407C7B46789983CD8497ADF000000000480000010000000100000009D5510223ADAFF0D214797166ABF00E71000000044D9ABFDD92A841F09DF3461C67FD5231400000004CF33CE7C73F5D847851D8201D6028694F1FC51
+                        //User   Key: 0200000000000000000000000000000000000000000000000800000072006400700000000E6600001000000010000000FB1308672F24BB2A3E2C9625977BC1CE00000000048000001000000010000000F60BBBB68E21ACE12D3A54C26BDC7686100000009963D2B109863E4345AD3F6C4BB1DA4314000000FC55E7196D64A5B8C90BA683CBC9775D95A86A97
+                        //rdp    Key: 0200000000000000000000000000000000000000000000000800000072006400700000000E66000010000000100000001E392BB875946E7281F1D962E2CBA05900000000048000001000000010000000BEBDA63E164615F22450CEC59F37D46B200000003BC01FF8CF7EC256730228E21FA4434597E6FF98EBC66B4B1D96EA4E76F7C6AA14000000BCA27291CE4AD6B9B1C3BD3CE397D53647213EC4
+                        //test
+                        sEncrypted = DPAPI.EncryptRDP(_sPass, "rdp");
+                        System.Diagnostics.Debug.WriteLine("****rdp****\r\nNo KEY    : " + sEncrypted);
+                        //sEncrypted = DPAPI.Encrypt(DPAPI.KeyType.UserKey, _sPass, null, "rdp");
+                        //System.Diagnostics.Debug.WriteLine("User   Key: " + sEncrypted);
+
+                        //sEncrypted = DPAPI.Encrypt(DPAPI.KeyType.MachineKey, _sPass, null, "psw");
+                        //System.Diagnostics.Debug.WriteLine("****psw****\r\nMachineKey: " + sEncrypted);
+                        //sEncrypted = DPAPI.Encrypt(DPAPI.KeyType.UserKey, _sPass, null, "psw");
+                        //System.Diagnostics.Debug.WriteLine("User   Key: " + sEncrypted);
+                        System.Diagnostics.Debug.WriteLine("rdp    Key: " + "0200000000000000000000000000000000000000000000000800000072006400700000000E66000010000000100000001E392BB875946E7281F1D962E2CBA05900000000048000001000000010000000BEBDA63E164615F22450CEC59F37D46B200000003BC01FF8CF7EC256730228E21FA4434597E6FF98EBC66B4B1D96EA4E76F7C6AA14000000BCA27291CE4AD6B9B1C3BD3CE397D53647213EC4");
+                        //user key matches more!!!
+                        #endregion
+                        string description="";
+                        string sTest = DPAPI.Decrypt(sEncrypted, string.Empty, out description);
+                        if (sTest != _sPass)
+                            sEncrypted = "Error while encrypting password";
+                        sb.Append(String.Format(sLine, sEncrypted));
                     }
                     else
                         sb.Append(String.Format(sLine, ""));
                 }
+                else if (sLine.StartsWith("ServerName"))
+                {
+                    sb.Append(string.Format(sLine, _sHostname));
+                }
+                else if (sLine.StartsWith("UserName"))
+                {
+                    sb.Append(string.Format(sLine, _sUser));
+                }
+                else if (sLine.StartsWith("SavePassword"))
+                {
+                    sb.Append(string.Format(sLine, _iSavePassword));
+                }
+                else if (sLine.StartsWith("DesktopHeight"))
+                {
+                    sb.Append(string.Format(sLine, _iHeight.ToString()));
+                }
+                else if (sLine.StartsWith("DesktopWidth"))
+                {
+                    sb.Append(string.Format(sLine, _iWidth.ToString()));
+                }
+                else if (sLine.StartsWith("ScreenStyle"))
+                {
+                    if(_iFullscreen==1)
+                        sb.Append(string.Format(sLine, "2"));
+                    else
+                        sb.Append(string.Format(sLine, "0"));
+                }
+                else if (sLine.StartsWith("ColorDepthID"))
+                {
+                    sb.Append(string.Format(sLine, _iBPP.ToString()));
+                }
                 else
-                    sb.Append(sLine);
+                    sb.Append(String.Format(sLine, ""));
 
                 i++;
                 sLine = rdpLines[i];
@@ -143,7 +196,7 @@ namespace RDPman
             return bRet;
         }
         string[] rdpLines = new string[]{
-	        "\xFF\xFE", //this is NOT used, it is the Unicode identifier
+//	        "\xFF\xFE", //this is NOT used, it is the Unicode identifier
 	        //new with 3. dec 2013
 	        "WorkingDir:s:{0}\r\n",
 	        "AlternateShell:s:{0}\r\n",	// NOT IMPLEMENTED IN RDM!

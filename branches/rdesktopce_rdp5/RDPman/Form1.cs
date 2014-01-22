@@ -24,7 +24,7 @@ namespace RDPman
         {
             txtHost.Text = _settings._sHostname;
             txtPass.Text = _settings._sPass;
-            if (_settings._bSavePassword == 1)
+            if (_settings._iSavePassword == 1)
                 chkSavePassword.Checked = true;
             else
                 chkSavePassword.Checked = false;
@@ -66,7 +66,7 @@ namespace RDPman
                 return;
             }
             _settings._sUser = txtUser.Text;
-            if(_settings._bSavePassword==1)
+            if(_settings._iSavePassword==1)
                 _settings._sPass = txtPass.Text;
             else
                 _settings._sPass = "";
@@ -147,6 +147,21 @@ namespace RDPman
             System.Diagnostics.Debug.WriteLine(sArg);
             //string sRDP = _settings.getRDPstring();
             _settings.writeFile("\\test.rdp");
+        }
+
+        private void btnBrowse_Click(object sender, EventArgs e)
+        {
+            string sProg = "";
+            Lime49.OpenFileDialog ofd = new Lime49.OpenFileDialog();
+            ofd.Filter = "*.exe";// "applications|*.exe|all files|*.*";
+            
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                sProg = ofd.SelectedFile;
+                if(System.IO.File.Exists(sProg))
+                    txtProgramLocation.Text = sProg;
+            }
+            ofd.Dispose();
         }
     }
 }

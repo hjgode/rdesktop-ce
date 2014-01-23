@@ -126,16 +126,12 @@
   <data name="itmOk.Text" xml:space="preserve">
     <value>Ok</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="ddVisitedLocations.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Top</value>
-  </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="ddVisitedLocations.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
+    <value>6, 3</value>
   </data>
   <data name="ddVisitedLocations.Size" type="System.Drawing.Size, System.Drawing">
-    <value>240, 22</value>
+    <value>231, 22</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="ddVisitedLocations.TabIndex" type="System.Int32, mscorlib">
@@ -153,14 +149,11 @@
   <data name="&gt;&gt;ddVisitedLocations.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
-  <data name="lstFiles.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Fill</value>
-  </data>
   <data name="lstFiles.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 22</value>
+    <value>6, 31</value>
   </data>
   <data name="lstFiles.Size" type="System.Drawing.Size, System.Drawing">
-    <value>240, 203</value>
+    <value>231, 95</value>
   </data>
   <metadata name="imlFileTypes.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>134, 17</value>
@@ -246,16 +239,59 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;lstFiles.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;txtFileName.Name" xml:space="preserve">
+    <value>txtFileName</value>
+  </data>
+  <data name="&gt;&gt;txtFileName.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;txtFileName.Parent" xml:space="preserve">
+    <value>panel1</value>
+  </data>
+  <data name="&gt;&gt;txtFileName.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
+  <data name="&gt;&gt;lblFileName.Name" xml:space="preserve">
+    <value>lblFileName</value>
+  </data>
+  <data name="&gt;&gt;lblFileName.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblFileName.Parent" xml:space="preserve">
+    <value>panel1</value>
+  </data>
+  <data name="&gt;&gt;lblFileName.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="panel1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 132</value>
+  </data>
+  <data name="panel1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>231, 47</value>
+  </data>
+  <data name="&gt;&gt;panel1.Name" xml:space="preserve">
+    <value>panel1</value>
+  </data>
+  <data name="&gt;&gt;panel1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;panel1.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;panel1.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="txtFileName.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Bottom</value>
   </data>
   <data name="txtFileName.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 22</value>
+    <value>0, 26</value>
   </data>
   <data name="txtFileName.Size" type="System.Drawing.Size, System.Drawing">
-    <value>240, 21</value>
+    <value>231, 21</value>
   </data>
   <data name="txtFileName.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -291,27 +327,6 @@
     <value>panel1</value>
   </data>
   <data name="&gt;&gt;lblFileName.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="panel1.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Bottom</value>
-  </data>
-  <data name="panel1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 225</value>
-  </data>
-  <data name="panel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>240, 43</value>
-  </data>
-  <data name="&gt;&gt;panel1.Name" xml:space="preserve">
-    <value>panel1</value>
-  </data>
-  <data name="&gt;&gt;panel1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;panel1.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;panel1.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
   <metadata name="$this.FormFactorShadowProperty" xml:space="preserve">
@@ -997,7 +1012,7 @@
 </value>
   </data>
   <data name="$this.Text" xml:space="preserve">
-    <value>Open File</value>
+    <value>Select File</value>
   </data>
   <data name="&gt;&gt;mnuMain.Name" xml:space="preserve">
     <value>mnuMain</value>

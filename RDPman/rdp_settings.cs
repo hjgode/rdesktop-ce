@@ -7,6 +7,8 @@ using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
 
+using System.Reflection;
+
 namespace RDPman
 {
     public class myxml
@@ -45,25 +47,63 @@ namespace RDPman
         #region FIELDS
         //-g geometry
         [XmlElement]
-        public int DesktopHeight = 240;
+        public int DesktopHeight{
+            get{ return _DesktopHeight;}
+            set{ _DesktopHeight=value;}
+        }
+        [XmlIgnore]
+        int _DesktopHeight = 240;
+
         [XmlElement]
-        public int DesktopWidth = 320;
+        public int DesktopWidth
+        {
+            get { return _DesktopWidth; }
+            set { _DesktopWidth = value; }
+        }
+        [XmlIgnore]
+        int _DesktopWidth = 320;
 
         //-t port
         [XmlElement]
-        public int MCSPort = 3389;
+        public int MCSPort
+        {
+            get { return _MCSPort; }
+            set { _MCSPort = value; }
+        }
+        [XmlIgnore]
+        int _MCSPort = 3389;
 
         //-a bpp BitsPerPixel, 8 or 15 or 16
         [XmlElement]
-        public int ColorDepthID = 16;
+        public int ColorDepthID
+        {
+            get { return _ColorDepthID; }
+            set { _ColorDepthID = value; }
+        }
+
+        [XmlIgnore]
+        int _ColorDepthID = 16;
 
         //-f fullscreen
         [XmlElement]
-        public int ScreenStyle = 0;
+        public int ScreenStyle
+        {
+            get { return _ScreenStyle; }
+            set { _ScreenStyle = value; }
+        }
+        [XmlIgnore]
+        int _ScreenStyle = 0;
 
         //-u user name
         [XmlElement]
-        public string UserName = "hgode";
+        public string UserName
+        {
+            get { return _UserName; }
+            set { _UserName = value; }
+        }
+
+        [XmlIgnore]
+        string _UserName = "hgode";
 
         //-p password
         /// <summary>
@@ -73,64 +113,129 @@ namespace RDPman
         [XmlElement]
         public string Password {
             set{
-                string sEnc=DPAPI.EncryptRDP(value,"rdp");
-                _password = sEnc;
+                if (value == null || value == "" || value == String.Empty)
+                    _password = "";
+                if (value.Length > 32)
+                { //this is a encrypted password
+                    _password = DPAPI.Decrypt(value);
+                }
+                else
+                {
+                    //string sEnc = DPAPI.EncryptRDP(value, "rdp");
+                    _password = value;
+                }
+                System.Diagnostics.Debug.WriteLine("SET pw=" + _password);
             }
             get
             {
-                return _password;
-            }
-        }    
-
-        [XmlIgnore]
-        private string _password;
-        [XmlIgnore]
-        private string _passwordClearText
-        {
-            get
-            {
-                string s = DPAPI.Decrypt(_password);
+                string s = DPAPI.EncryptRDP(_password, "rdp");
+                System.Diagnostics.Debug.WriteLine("GET pw=" + s);
+                System.Diagnostics.Debug.WriteLine("GET   =" + _password);
                 return s;
+                //return _password;
             }
         }
 
+        [XmlIgnore]
+        private string _password;
+        //[XmlIgnore]
+        //private string _passwordClearText
+        //{
+        //    get
+        //    {
+        //        string s = DPAPI.Decrypt(_password);
+        //        return s;
+        //    }
+        //}
+
         //-d domain
         [XmlElement]
-        public string Domain = "";
+        public string Domain
+        {
+            get { return _Domain; }
+            set { _Domain = value; }
+        }
+        [XmlIgnore]
+        string _Domain = "";
 
         //-s shell
         [XmlElement]
-        public string AlternateShell = "";
+        public string AlternateShell
+        {
+            get { return _AlternateShell; }
+            set { _AlternateShell = value; }
+        }
+        [XmlIgnore]
+        string _AlternateShell ="";
 
         //-c directory
         [XmlElement]
-        public string WorkingDir = "";
+        public string WorkingDir 
+        {
+            get { return _WorkingDir; }
+            set { _WorkingDir = value; }
+        }
+        [XmlIgnore]
+        string _WorkingDir ="";
 
         //-n hostname
         [XmlElement]
-        public string ServerName = "192.168.0.112";
+        public string ServerName
+        {
+            get { return _ServerName; }
+            set { _ServerName = value; }
+        }
+        [XmlIgnore]
+        string _ServerName = "192.168.0.112";
 
         //-x clipboard, currently not supported
         [XmlElement]
-        public int EnableClipboardRedirection = 0;
+        public int EnableClipboardRedirection
+        {
+            get { return _EnableClipboardRedirection; }
+            set { _EnableClipboardRedirection = value; }
+        }
+        [XmlIgnore]
+        int _EnableClipboardRedirection = 0;
 
         //-b barcode reader support
         [XmlElement]
-        public int usebarcodereader = 0;
+        public int usebarcodereader //= 0;
+        {
+            get { return _usebarcodereader; }
+            set { _usebarcodereader = value; }
+        }
+        [XmlIgnore]
+        int _usebarcodereader = 0;
 
         [XmlElement]
-        public string rdesktopce = @"\Program Files\rdesktopce\rdesktopce.exe";
+        public string rdesktopce// = @"\Program Files\rdesktopce\rdesktopce.exe";
+        {
+            get { return _rdesktopce; }
+            set { _rdesktopce = value; }
+        }
+        [XmlIgnore]
+        string _rdesktopce = @"\Program Files\rdesktopce\rdesktopce.exe";
 
         [XmlElement]
-        public int SavePassword = 1;
+        public int SavePassword// = 1;
+        {
+            get { return _SavePassword; }
+            set { _SavePassword = value; }
+        }
+        [XmlIgnore]
+        int _SavePassword = 1;
         #endregion
-        public string getArgList()
+        
+public string getArgList()
         {
             string sRet = "";
             //-g
             sRet += " -g "+DesktopHeight.ToString()+"x"+DesktopWidth.ToString();
             sRet += " -n " + ServerName + " -t " + MCSPort.ToString();
-            sRet += " -u " + UserName + " -p " + _passwordClearText;
+            sRet += " -u " + UserName ;
+            if(Password.Length>0)
+                sRet += " -p " + DPAPI.Decrypt(Password);// _passwordClearText;
             if (Domain.Length > 0)
                 sRet += " -d " + Domain;
             if (AlternateShell.Length > 0)
@@ -178,7 +283,7 @@ namespace RDPman
                 }
                 else if (sLine.StartsWith("Password"))
                 {
-                    if (_passwordClearText.Length > 0)
+                    if (DPAPI.Decrypt(Password).Length > 0)
                     {
                         #region TESTING
                         //string sPassEnc = rdp_password.EncryptRDPPassword(Password);
@@ -193,6 +298,7 @@ namespace RDPman
                         //rdp:          0200000000000000000000000000000000000000000000000800000072006400700000000E66000010000000100000001E392BB875946E7281F1D962E2CBA05900000000048000001000000010000000BEBDA63E164615F22450CEC59F37D46B200000003BC01FF8CF7EC256730228E21FA4434597E6FF98EBC66B4B1D96EA4E76F7C6AA14000000BCA27291CE4AD6B9B1C3BD3CE397D53647213EC4
 
                         //string sPassEnc = RDPcrypt.CryptTest.RDPencrypt(Password);
+                        string _passwordClearText = DPAPI.Decrypt(Password);
                         string sEncrypted = DPAPI.Encrypt(DPAPI.KeyType.UserKey, _passwordClearText, string.Empty, "psw");
                         //MachineKey: 0200000000000000000000000000000000000000040000000800000072006400700000000E6600001000000010000000ABD068CB6407C7B46789983CD8497ADF000000000480000010000000100000009D5510223ADAFF0D214797166ABF00E71000000044D9ABFDD92A841F09DF3461C67FD5231400000004CF33CE7C73F5D847851D8201D6028694F1FC51
                         //User   Key: 0200000000000000000000000000000000000000000000000800000072006400700000000E6600001000000010000000FB1308672F24BB2A3E2C9625977BC1CE00000000048000001000000010000000F60BBBB68E21ACE12D3A54C26BDC7686100000009963D2B109863E4345AD3F6C4BB1DA4314000000FC55E7196D64A5B8C90BA683CBC9775D95A86A97
@@ -399,5 +505,103 @@ namespace RDPman
             "rdesktopce:s:{0}\r\n",
 	        null
         };
+        #region SAVELOADSETTINGS
+        string settingsfile = "settings.dat";
+        /// <summary>
+        /// does not work correctly for password
+        /// </summary>
+        public void Load()
+        {
+            string AppPath;
+            AppPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+            if (!AppPath.EndsWith(@"\"))
+                AppPath += @"\"; 
+            
+            if (File.Exists(AppPath + settingsfile))
+            {
+                Type type = this.GetType();
+
+                string propertyName, value;
+                string[] temp;
+                char[] splitChars = new char[] { '|' };
+                PropertyInfo propertyInfo;
+
+                string[] settingsLines;// File.ReadAllLines("settings.dat");
+                List<string> sLines = new List<string>();
+                try
+                {
+                    using (StreamReader sr = new StreamReader(AppPath + settingsfile))
+                    {
+                        string line = "";
+                        line = sr.ReadLine();
+                        while (line != null)
+                        {
+                            sLines.Add(line);
+                            line = sr.ReadLine();
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    System.Diagnostics.Debug.WriteLine("The settings file could not be read:");
+                    System.Diagnostics.Debug.WriteLine(e.Message);
+                }
+                settingsLines = sLines.ToArray();
+                foreach (string s in settingsLines)
+                {
+                    temp = s.Split(splitChars);
+                    if (temp.Length == 2)
+                    {
+                        propertyName = temp[0];
+                        value = temp[1];
+                        propertyInfo = type.GetProperty(propertyName);
+                        if (propertyInfo != null)
+                            this.SetProperty(propertyInfo, value);
+                        System.Diagnostics.Debug.WriteLine("Load: " + propertyName + "/" + value);
+                    }
+                }
+            }
+        }
+        public void Save()
+        {
+            string AppPath;
+            AppPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+            if (!AppPath.EndsWith(@"\"))
+                AppPath += @"\";
+            
+            Type type = this.GetType();
+            PropertyInfo[] properties = type.GetProperties();
+            try
+            {
+                using (TextWriter tw = new StreamWriter(AppPath + settingsfile))
+                {
+                    foreach (PropertyInfo propertyInfo in properties)
+                    {
+                        tw.WriteLine(propertyInfo.Name + "|" + propertyInfo.GetValue(this, null));
+                        System.Diagnostics.Debug.WriteLine(propertyInfo.Name + "|" + propertyInfo.GetValue(this, null));
+                    }
+                    tw.Flush();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Exception in Save(): " + ex.Message);
+            }
+            //tw.Close();
+        }
+
+        public void SetProperty(PropertyInfo propertyInfo, object value)
+        {
+            switch (propertyInfo.PropertyType.Name)
+            {
+                case "Int32":
+                    propertyInfo.SetValue(this, Convert.ToInt32(value), null);
+                    break;
+                case "String":
+                    propertyInfo.SetValue(this, value.ToString(), null);
+                    break;
+            }
+        }
+        #endregion
     }
 }

@@ -13,10 +13,13 @@ namespace RDPman
     public partial class Form1 : Form
     {
         rdp_settings _settings;
+        bool bIsAutoClose = false;
+
         public Form1()
         {
             InitializeComponent();
             _settings = new rdp_settings();
+            //_settings.Load();
             updateForm();
         }
 
@@ -49,6 +52,9 @@ namespace RDPman
             txtProgramLocation.Text = _settings.rdesktopce;
         }
 
+        /// <summary>
+        /// save the actual entered data back to class
+        /// </summary>
         void updateSettings()
         {
             _settings.ServerName = txtHost.Text;
@@ -189,6 +195,7 @@ namespace RDPman
 
         private void mnuSave_Click(object sender, EventArgs e)
         {
+            updateSettings();
             string sXmlFile = "";
             Lime49.OpenFileDialog ofd = new Lime49.OpenFileDialog();
             ofd.Filter = "xml";// "applications|*.exe|all files|*.*";
@@ -199,6 +206,46 @@ namespace RDPman
                 _settings.writeXML(sXmlFile);
             }
             ofd.Dispose();
+        }
+
+        private void inputPanel1_EnabledChanged(object sender, EventArgs e)
+        {
+            Rectangle VisibleRect = new Rectangle();
+            VisibleRect = this.tabControl1.Bounds;
+            VisibleRect.Size = this.tabControl1.Size;
+            if (this.inputPanel1.Enabled == true) //SIP is open 
+            {
+                this.tabControl1.Dock = DockStyle.Top;
+                Size si = new Size(this.inputPanel1.VisibleDesktop.Width, this.inputPanel1.VisibleDesktop.Height);
+                VisibleRect.Size = si;
+                this.tabControl1.Bounds = VisibleRect;
+
+            }
+            else if (this.inputPanel1.Enabled == false)// SIP is close, restore to the size 
+            {
+                this.tabControl1.Dock = DockStyle.Fill;
+                //Size si = new Size(this.inputPanel1.VisibleDesktop.Width,
+                //    VisibleRect.Height - this.inputPanel1.Bounds.Height);
+                //VisibleRect.Size = si;
+                //this.tabControl1.Bounds = VisibleRect;
+
+            }
+        }
+
+        private void Form1_Closing(object sender, CancelEventArgs e)
+        {
+            if (!bIsAutoClose)
+            {
+                if (MessageBox.Show("Exit", "Exit?", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Cancel)
+                    e.Cancel = true;
+                //if (MessageBox.Show("Settings", "Save current settings?", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+                //    _settings.Save();
+            }
+        }
+
+        private void mnuExit_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

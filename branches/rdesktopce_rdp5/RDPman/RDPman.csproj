@@ -46,6 +46,7 @@
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.WindowsCE.Forms" />
     <Reference Include="mscorlib" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -85,7 +86,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="rdp_password.cs" />
     <Compile Include="rdp_settings.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />

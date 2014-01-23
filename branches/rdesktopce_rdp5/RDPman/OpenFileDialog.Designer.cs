@@ -84,8 +84,8 @@ namespace Lime49 {
             // 
             // lstFiles
             // 
-            resources.ApplyResources(this.lstFiles, "lstFiles");
             this.lstFiles.FullRowSelect = true;
+            resources.ApplyResources(this.lstFiles, "lstFiles");
             this.lstFiles.Name = "lstFiles";
             this.lstFiles.SmallImageList = this.imlFileTypes;
             this.lstFiles.View = System.Windows.Forms.View.List;
@@ -118,8 +118,8 @@ namespace Lime49 {
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             resources.ApplyResources(this, "$this");
             this.ControlBox = false;
-            this.Controls.Add(this.lstFiles);
             this.Controls.Add(this.panel1);
+            this.Controls.Add(this.lstFiles);
             this.Controls.Add(this.ddVisitedLocations);
             this.Menu = this.mnuMain;
             this.MinimizeBox = false;

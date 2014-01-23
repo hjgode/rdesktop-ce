@@ -64,6 +64,7 @@
             this.btnBrowse = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.txtProgramLocation = new System.Windows.Forms.TextBox();
+            this.inputPanel1 = new Microsoft.WindowsCE.Forms.InputPanel();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -193,6 +194,7 @@
             // mnuExit
             // 
             this.mnuExit.Text = "Exit";
+            this.mnuExit.Click += new System.EventHandler(this.mnuExit_Click);
             // 
             // mnuLoad
             // 
@@ -343,7 +345,7 @@
             this.tabProg.Controls.Add(this.txtProgramLocation);
             this.tabProg.Location = new System.Drawing.Point(0, 0);
             this.tabProg.Name = "tabProg";
-            this.tabProg.Size = new System.Drawing.Size(240, 245);
+            this.tabProg.Size = new System.Drawing.Size(232, 242);
             this.tabProg.Text = "Prog";
             // 
             // chkBarcodeReader
@@ -380,6 +382,10 @@
             this.txtProgramLocation.Text = "\\Program Files\\rdesktopce\\rdesktopce.exe";
             this.txtProgramLocation.WordWrap = false;
             // 
+            // inputPanel1
+            // 
+            this.inputPanel1.EnabledChanged += new System.EventHandler(this.inputPanel1_EnabledChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -391,6 +397,7 @@
             this.MinimizeBox = false;
             this.Name = "Form1";
             this.Text = "RDPman";
+            this.Closing += new System.ComponentModel.CancelEventHandler(this.Form1_Closing);
             this.tabControl1.ResumeLayout(false);
             this.tabHost.ResumeLayout(false);
             this.tabScreen.ResumeLayout(false);
@@ -424,6 +431,7 @@
         private System.Windows.Forms.TextBox txtDomain;
         private System.Windows.Forms.CheckBox chkBarcodeReader;
         private System.Windows.Forms.CheckBox chkSavePassword;
+        private Microsoft.WindowsCE.Forms.InputPanel inputPanel1;
     }
 }
 

@@ -256,5 +256,10 @@ namespace Lime49 {
             }
             return true;
         }
+
+        private void inputPanel1_EnabledChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

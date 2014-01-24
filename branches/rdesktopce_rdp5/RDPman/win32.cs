@@ -30,7 +30,8 @@ namespace RDPman
             {
                 _process.Start();
                 System.Threading.Thread.Sleep(200);
-                if(_process.MainWindowHandle!=IntPtr.Zero)
+                if(_process.Id!=0)
+                //if(_process.MainWindowHandle!=IntPtr.Zero) //this will not work as rdesktopce main win will be delayed
                     bRet = true;
             }
             catch (Exception) { }

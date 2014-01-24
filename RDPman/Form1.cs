@@ -19,13 +19,44 @@ namespace RDPman
         {
             InitializeComponent();
             _settings = new rdp_settings();
-            //_settings.Load();
-            updateForm();
+            if (!loadSettings())
+                updateForm();
+        }
+
+        bool loadSettings()
+        {
+            bool bRet = false;
+            string AppPath;
+            AppPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+            if (!AppPath.EndsWith(@"\"))
+                AppPath += @"\";
+            string sXmlFile = AppPath + "settings.xml";
+            if (System.IO.File.Exists(sXmlFile))
+            {
+                rdp_settings rdpsett = rdp_settings.loadSettings(sXmlFile);
+                if (rdpsett != null)
+                {
+                    _settings = rdpsett;
+                    updateForm();
+                    bRet = true;
+                }
+            }
+            return bRet;
+        }
+
+        void saveSettings()
+        {
+            string AppPath;
+            AppPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+            if (!AppPath.EndsWith(@"\"))
+                AppPath += @"\";
+            string sXmlFile = AppPath + "settings.xml";
+            _settings.writeXML(sXmlFile);
         }
 
         void updateForm()
         {
-            txtHost.Text = _settings.ServerName;
+            txtServer.Text = _settings.ServerNameOrIP;
             txtPass.Text = DPAPI.Decrypt( _settings.Password );
             if (_settings.SavePassword == 1)
                 chkSavePassword.Checked = true;
@@ -39,7 +70,8 @@ namespace RDPman
             txtWidth.Text = _settings.DesktopHeight.ToString();
             txtHeight.Text = _settings.DesktopWidth.ToString();
             setBPP(_settings.ColorDepthID);
-            if(_settings.ScreenStyle==1)
+            if( _settings.ScreenStyle==rdp_settings.eScreenStyles.fullscreen_Fit ||
+                _settings.ScreenStyle==rdp_settings.eScreenStyles.fullscreen_NoFit )
                 chkFullscreen.Checked = true;
             else
                 chkFullscreen.Checked = false;
@@ -57,7 +89,7 @@ namespace RDPman
         /// </summary>
         void updateSettings()
         {
-            _settings.ServerName = txtHost.Text;
+            _settings.ServerNameOrIP= txtServer.Text;
             _settings.Password = txtPass.Text;
             try
             {
@@ -104,9 +136,9 @@ namespace RDPman
             }
             _settings.ColorDepthID = getBPP();
             if (chkFullscreen.Checked)
-                _settings.ScreenStyle = 1;
+                _settings.ScreenStyle = rdp_settings.eScreenStyles.fullscreen_NoFit;// 1;
             else
-                _settings.ScreenStyle = 0;
+                _settings.ScreenStyle = rdp_settings.eScreenStyles.notFullscreen_NoFit;// 0;
             _settings.rdesktopce = txtProgramLocation.Text;
 
             if (chkBarcodeReader.Checked)
@@ -153,6 +185,15 @@ namespace RDPman
             System.Diagnostics.Debug.WriteLine(sArg);
             //string sRDP = _settings.getRDPstring();
             _settings.writeFile("\\test.rdp");
+
+            if (win32.startApp(_settings.rdesktopce, sArg))
+            {
+                if (MessageBox.Show("exit?", "rdesktopce started", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+                {
+                    bIsAutoClose = true;
+                    this.Close();
+                }
+            }
         }
 
         private void btnBrowse_Click(object sender, EventArgs e)
@@ -238,14 +279,37 @@ namespace RDPman
             {
                 if (MessageBox.Show("Exit", "Exit?", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Cancel)
                     e.Cancel = true;
-                //if (MessageBox.Show("Settings", "Save current settings?", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
-                //    _settings.Save();
+                if (!e.Cancel)
+                {
+                    if (MessageBox.Show("Save current session settings?", "Settings", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+                        saveSettings();
+                }
             }
         }
 
         private void mnuExit_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void chkFit2Screen_CheckStateChanged(object sender, EventArgs e)
+        {
+            if (chkFit2Screen.Checked)
+            {
+                txtHeight.Enabled = false;
+                txtHeight.Text = win32.ScreenHeight.ToString();
+                txtWidth.Enabled = false;
+                txtWidth.Text = win32.ScreenWidth.ToString();
+                _settings.fit2screen = 1;
+            }
+            else
+            {
+                txtHeight.Enabled = true;
+                txtHeight.Text = win32.ScreenHeight.ToString();
+                txtWidth.Enabled = true;
+                txtWidth.Text = win32.ScreenWidth.ToString();
+                _settings.fit2screen = 0;
+            }
         }
     }
 }

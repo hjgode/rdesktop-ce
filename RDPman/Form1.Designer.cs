@@ -359,7 +359,7 @@
             this.tabProg.Controls.Add(this.txtProgramLocation);
             this.tabProg.Location = new System.Drawing.Point(0, 0);
             this.tabProg.Name = "tabProg";
-            this.tabProg.Size = new System.Drawing.Size(240, 245);
+            this.tabProg.Size = new System.Drawing.Size(232, 242);
             this.tabProg.Text = "Prog";
             // 
             // chkBarcodeReader

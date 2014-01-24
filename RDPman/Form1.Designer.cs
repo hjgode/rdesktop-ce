@@ -55,6 +55,7 @@
             this.txtPort = new System.Windows.Forms.TextBox();
             this.txtServer = new System.Windows.Forms.TextBox();
             this.tabScreen = new System.Windows.Forms.TabPage();
+            this.chkFit2Screen = new System.Windows.Forms.CheckBox();
             this.chkFullscreen = new System.Windows.Forms.CheckBox();
             this.cboColorDepth = new System.Windows.Forms.ComboBox();
             this.txtHeight = new System.Windows.Forms.TextBox();
@@ -65,7 +66,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.txtProgramLocation = new System.Windows.Forms.TextBox();
             this.inputPanel1 = new Microsoft.WindowsCE.Forms.InputPanel();
-            this.chkFit2Screen = new System.Windows.Forms.CheckBox();
+            this.chkExitAfterStart = new System.Windows.Forms.CheckBox();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -250,6 +251,7 @@
             this.chkSavePassword.Size = new System.Drawing.Size(121, 20);
             this.chkSavePassword.TabIndex = 7;
             this.chkSavePassword.Text = "save password";
+            this.chkSavePassword.CheckStateChanged += new System.EventHandler(this.chkSavePassword_CheckStateChanged);
             // 
             // txtDomain
             // 
@@ -303,8 +305,17 @@
             this.tabScreen.Controls.Add(label8);
             this.tabScreen.Location = new System.Drawing.Point(0, 0);
             this.tabScreen.Name = "tabScreen";
-            this.tabScreen.Size = new System.Drawing.Size(240, 245);
+            this.tabScreen.Size = new System.Drawing.Size(232, 242);
             this.tabScreen.Text = "Screen";
+            // 
+            // chkFit2Screen
+            // 
+            this.chkFit2Screen.Location = new System.Drawing.Point(8, 23);
+            this.chkFit2Screen.Name = "chkFit2Screen";
+            this.chkFit2Screen.Size = new System.Drawing.Size(174, 18);
+            this.chkFit2Screen.TabIndex = 18;
+            this.chkFit2Screen.Text = "Fit to mobile Screen";
+            this.chkFit2Screen.CheckStateChanged += new System.EventHandler(this.chkFit2Screen_CheckStateChanged);
             // 
             // chkFullscreen
             // 
@@ -341,20 +352,21 @@
             // tabProg
             // 
             this.tabProg.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.tabProg.Controls.Add(this.chkExitAfterStart);
             this.tabProg.Controls.Add(this.chkBarcodeReader);
             this.tabProg.Controls.Add(this.btnBrowse);
             this.tabProg.Controls.Add(this.label5);
             this.tabProg.Controls.Add(this.txtProgramLocation);
             this.tabProg.Location = new System.Drawing.Point(0, 0);
             this.tabProg.Name = "tabProg";
-            this.tabProg.Size = new System.Drawing.Size(232, 242);
+            this.tabProg.Size = new System.Drawing.Size(240, 245);
             this.tabProg.Text = "Prog";
             // 
             // chkBarcodeReader
             // 
-            this.chkBarcodeReader.Location = new System.Drawing.Point(8, 72);
+            this.chkBarcodeReader.Location = new System.Drawing.Point(7, 52);
             this.chkBarcodeReader.Name = "chkBarcodeReader";
-            this.chkBarcodeReader.Size = new System.Drawing.Size(223, 21);
+            this.chkBarcodeReader.Size = new System.Drawing.Size(225, 21);
             this.chkBarcodeReader.TabIndex = 3;
             this.chkBarcodeReader.Text = "enable BarcodeReader support";
             // 
@@ -388,14 +400,13 @@
             // 
             this.inputPanel1.EnabledChanged += new System.EventHandler(this.inputPanel1_EnabledChanged);
             // 
-            // chkFit2Screen
+            // chkExitAfterStart
             // 
-            this.chkFit2Screen.Location = new System.Drawing.Point(8, 23);
-            this.chkFit2Screen.Name = "chkFit2Screen";
-            this.chkFit2Screen.Size = new System.Drawing.Size(174, 18);
-            this.chkFit2Screen.TabIndex = 18;
-            this.chkFit2Screen.Text = "Fit to mobile Screen";
-            this.chkFit2Screen.CheckStateChanged += new System.EventHandler(this.chkFit2Screen_CheckStateChanged);
+            this.chkExitAfterStart.Location = new System.Drawing.Point(7, 122);
+            this.chkExitAfterStart.Name = "chkExitAfterStart";
+            this.chkExitAfterStart.Size = new System.Drawing.Size(225, 18);
+            this.chkExitAfterStart.TabIndex = 5;
+            this.chkExitAfterStart.Text = "Exit RDPman after Start";
             // 
             // Form1
             // 
@@ -444,6 +455,7 @@
         private System.Windows.Forms.CheckBox chkSavePassword;
         private Microsoft.WindowsCE.Forms.InputPanel inputPanel1;
         private System.Windows.Forms.CheckBox chkFit2Screen;
+        private System.Windows.Forms.CheckBox chkExitAfterStart;
     }
 }
 

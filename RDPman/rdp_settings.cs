@@ -46,6 +46,9 @@ namespace RDPman
     {
         #region FIELDS
         [XmlElement]
+        public int exitAfterStart = 1;
+
+        [XmlElement]
         public string ServerNameOrIP = "192.168.0.112";
 
         //-g geometry

@@ -14,6 +14,7 @@ namespace RDPman
     {
         rdp_settings _settings;
         bool bIsAutoClose = false;
+        Timer t = new Timer();
 
         public Form1()
         {
@@ -56,6 +57,10 @@ namespace RDPman
 
         void updateForm()
         {
+            if (_settings.exitAfterStart == 1)
+                chkExitAfterStart.Checked = true;
+            else
+                chkExitAfterStart.Checked = false;
             txtServer.Text = _settings.ServerNameOrIP;
             txtPass.Text = DPAPI.Decrypt( _settings.Password );
             if (_settings.SavePassword == 1)
@@ -89,6 +94,11 @@ namespace RDPman
         /// </summary>
         void updateSettings()
         {
+            if (chkExitAfterStart.Checked)
+                _settings.exitAfterStart = 1;
+            else
+                _settings.exitAfterStart = 0;
+
             _settings.ServerNameOrIP= txtServer.Text;
             _settings.Password = txtPass.Text;
             try
@@ -104,10 +114,16 @@ namespace RDPman
                 return;
             }
             _settings.UserName = txtUser.Text;
-            if(_settings.SavePassword==1)
+            if (_settings.SavePassword == 1)
+            {
                 _settings.Password = txtPass.Text;
+                chkSavePassword.Checked = true;
+            }
             else
+            {
                 _settings.Password = "";
+                chkSavePassword.Checked = false;
+            }
 
             _settings.Domain = txtDomain.Text;
             try
@@ -188,12 +204,24 @@ namespace RDPman
 
             if (win32.startApp(_settings.rdesktopce, sArg))
             {
-                if (MessageBox.Show("exit?", "rdesktopce started", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+                if (_settings.exitAfterStart==1)
                 {
-                    bIsAutoClose = true;
-                    this.Close();
+                    t.Tick += new EventHandler(t_Tick);
+                    t.Interval = 15000;
+                    t.Enabled = true;
+                    Cursor.Current = Cursors.WaitCursor;
+                    this.Enabled = false;
                 }
             }
+        }
+
+        //exit RDPman after some time
+        void t_Tick(object sender, EventArgs e)
+        {
+            t.Enabled = false;
+            bIsAutoClose = true;
+            Cursor.Current = Cursors.Default;
+            Application.Exit();
         }
 
         private void btnBrowse_Click(object sender, EventArgs e)
@@ -310,6 +338,15 @@ namespace RDPman
                 txtWidth.Text = win32.ScreenWidth.ToString();
                 _settings.fit2screen = 0;
             }
+        }
+
+        private void chkSavePassword_CheckStateChanged(object sender, EventArgs e)
+        {
+            if (chkSavePassword.Checked)
+                _settings.SavePassword = 1;
+            else
+                _settings.SavePassword = 0;
+
         }
     }
 }

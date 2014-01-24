@@ -901,7 +901,6 @@
 		</File>
 		<File
 			RelativePath=".\winrdesktop.ini"
-			DeploymentContent="true"
 			>
 		</File>
 	</Files>

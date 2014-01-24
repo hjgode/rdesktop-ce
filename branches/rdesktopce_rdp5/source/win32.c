@@ -2038,8 +2038,9 @@ mi_process_cl(LPTSTR lpCmdLine)
     param[i1] = 0;
     strcpy(param1, param);
     state = mi_process_a_param(param1, state);
-    strcpy(g_servername, param1);
+    strcpy(g_servername, param1); //the last arg is the server to connect to
   }
+
   if (state == 0)
   {
     mi_post_param();

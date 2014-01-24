@@ -2015,6 +2015,7 @@ mi_process_cl(LPTSTR lpCmdLine)
   len = lstrlen(lpCmdLine);
   if (len == 0)
   {
+    //try to process an ini file if any
     return mi_check_config_file();
   }
   for (i = 0; i < len; i++)

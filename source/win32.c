@@ -275,8 +275,8 @@ static LRESULT handle_WM_COMMAND(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 			//SetCursor(LoadCursor(NULL, IDC_WAIT));
 			//ShowCursor(TRUE);
 			//UpdateWindow(hWnd);
-			MessageBox(hWnd, L"Currently disabled", L"Exit rdesktop?", MB_SETFOREGROUND|MB_TOPMOST|MB_ICONSTOP);
-			return 0;
+			//MessageBox(hWnd, L"Currently disabled", L"Exit rdesktop?", MB_SETFOREGROUND|MB_TOPMOST|MB_ICONSTOP);
+			//return 0;
 			PostQuitMessage(-33);
 			return 0;
 		default:
@@ -1500,7 +1500,7 @@ mi_create_window(void)
   w = rc.right - rc.left;
   MENU_HEIGHT=GetSystemMetrics(SM_CYMENU); //says 23, should be 26
   winBorder = GetSystemMetrics(SM_CYBORDER); //says 1
-	
+  DEBUGMSG(1, (L"CreateWindows(): menuH=%i, winBorder=%i\r\n", MENU_HEIGHT, winBorder));	
   if(g_fullscreen)
 	{
 		MENU_HEIGHT=0;
@@ -2120,6 +2120,23 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     WSACleanup();
     return 0;
   }
+  DEBUGMSG(1, (L"global vars:\r\nbpp=%i, usescanner=%i, workdir='%S', domain='%S', fullscreen=%i\
+				\r\nheight=%i, width=%i, screenH=%i, screenW=%i, \
+				\r\nhostname='%S', user='%S', pass='%S', shell='%S', port=%i\r\n",
+	  g_server_depth,
+	  g_busescanner,
+	  g_directory,
+	  g_domain,
+	  g_fullscreen,
+	  g_height,
+	  g_width,
+	  g_screen_height,
+	  g_screen_width,
+	  g_hostname,
+	  g_username,
+	  g_password,
+	  g_shell,
+	  g_tcp_port_rdp));
   hCurs1 = LoadCursor(NULL, IDC_WAIT);
   if(hCurs1!=INVALID_HANDLE_VALUE)
 	SetCursor(hCurs1);

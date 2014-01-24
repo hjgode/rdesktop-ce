@@ -975,7 +975,7 @@ ui_main(void)
 
 		//g_redirect = FALSE;
 		//ui_init_connection();	//windows sizing etc will done in mi_create_window()
-
+DEBUGMSG(1, (L"ui_main connecting to '%s' at '%s'\r\n", (LPSTR)server, (LPSTR)domain));
 		if (!rdp_connect(server, flags, domain, password, g_shell, g_directory, g_redirect))
 		{
 			return 0; //EX_PROTOCOL not used in CE version

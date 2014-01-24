@@ -61,6 +61,10 @@ namespace RDPman
                 chkExitAfterStart.Checked = true;
             else
                 chkExitAfterStart.Checked = false;
+            
+            //txtAlternateShell.Text = _settings.AlternateShell;
+            //txtWorkingDir.Text = _settings.WorkingDir;
+
             txtServer.Text = _settings.ServerNameOrIP;
             txtPass.Text = DPAPI.Decrypt( _settings.Password );
             if (_settings.SavePassword == 1)
@@ -94,6 +98,9 @@ namespace RDPman
         /// </summary>
         void updateSettings()
         {
+            //_settings.AlternateShell = txtAlternateShell.Text;
+            //_settings.WorkingDir = txtWorkingDir.Text;
+
             if (chkExitAfterStart.Checked)
                 _settings.exitAfterStart = 1;
             else

@@ -219,7 +219,7 @@ namespace RDPman
             set { _AlternateShell = value; }
         }
         [XmlIgnore]
-        string _AlternateShell ="";
+        string _AlternateShell =@"'c:\windows\notepad.exe'";
 
         //-c directory
         [XmlElement]
@@ -229,7 +229,7 @@ namespace RDPman
             set { _WorkingDir = value; }
         }
         [XmlIgnore]
-        string _WorkingDir ="";
+        string _WorkingDir =@"'c:\'";
 
         //-n hostname
         [XmlElement]
@@ -420,9 +420,9 @@ namespace RDPman
                 {
                     sb.Append(string.Format(sLine, ColorDepthID.ToString()));
                 }
-                else if (sLine.StartsWith("rdesktopce")){
-                    sb.Append(string.Format(sLine, rdesktopce));
-                }
+                //else if (sLine.StartsWith("rdesktopce")){
+                //    sb.Append(string.Format(sLine, rdesktopce));
+                //}
                 else
                     sb.Append(String.Format(sLine, ""));
 
@@ -566,107 +566,9 @@ namespace RDPman
 	        "DesktopWidth:i:{0}\r\n",
 	        "ScreenStyle:i:{0}\r\n",  //0=no fullscreen + no fit, 1= fit to screen+no fullscreen, 2=fullscreen+no fit, 3=fit+fullscreen
 	        "ColorDepthID:i:{0}\r\n", //changed from {0} to {0} with version 4
-            "rdesktopce:s:{0}\r\n",
+            //"rdesktopce:s:{0}\r\n",
 	        "HostName:s:{0}\r\n",
 	        null
         };
-        #region SAVELOADSETTINGS
-        //string settingsfile = "settings.dat";
-        ///// <summary>
-        ///// does not work correctly for password
-        ///// </summary>
-        //public void Load()
-        //{
-        //    string AppPath;
-        //    AppPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
-        //    if (!AppPath.EndsWith(@"\"))
-        //        AppPath += @"\"; 
-            
-        //    if (File.Exists(AppPath + settingsfile))
-        //    {
-        //        Type type = this.GetType();
-
-        //        string propertyName, value;
-        //        string[] temp;
-        //        char[] splitChars = new char[] { '|' };
-        //        PropertyInfo propertyInfo;
-
-        //        string[] settingsLines;// File.ReadAllLines("settings.dat");
-        //        List<string> sLines = new List<string>();
-        //        try
-        //        {
-        //            using (StreamReader sr = new StreamReader(AppPath + settingsfile))
-        //            {
-        //                string line = "";
-        //                line = sr.ReadLine();
-        //                while (line != null)
-        //                {
-        //                    sLines.Add(line);
-        //                    line = sr.ReadLine();
-        //                }
-        //            }
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            System.Diagnostics.Debug.WriteLine("The settings file could not be read:");
-        //            System.Diagnostics.Debug.WriteLine(e.Message);
-        //        }
-        //        settingsLines = sLines.ToArray();
-        //        foreach (string s in settingsLines)
-        //        {
-        //            temp = s.Split(splitChars);
-        //            if (temp.Length == 2)
-        //            {
-        //                propertyName = temp[0];
-        //                value = temp[1];
-        //                propertyInfo = type.GetProperty(propertyName);
-        //                if (propertyInfo != null)
-        //                    this.SetProperty(propertyInfo, value);
-        //                System.Diagnostics.Debug.WriteLine("Load: " + propertyName + "/" + value);
-        //            }
-        //        }
-        //    }
-        //}
-        //public void Save()
-        //{
-        //    string AppPath;
-        //    AppPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
-        //    if (!AppPath.EndsWith(@"\"))
-        //        AppPath += @"\";
-            
-        //    Type type = this.GetType();
-        //    PropertyInfo[] properties = type.GetProperties();
-        //    try
-        //    {
-        //        using (TextWriter tw = new StreamWriter(AppPath + settingsfile))
-        //        {
-        //            foreach (PropertyInfo propertyInfo in properties)
-        //            {
-        //                tw.WriteLine(propertyInfo.Name + "|" + propertyInfo.GetValue(this, null));
-        //                System.Diagnostics.Debug.WriteLine(propertyInfo.Name + "|" + propertyInfo.GetValue(this, null));
-        //            }
-        //            tw.Flush();
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        System.Diagnostics.Debug.WriteLine("Exception in Save(): " + ex.Message);
-        //    }
-        //    //tw.Close();
-        //}
-
-        //public void SetProperty(PropertyInfo propertyInfo, object value)
-        //{
-        //    switch (propertyInfo.PropertyType.Name)
-        //    {
-        //        case "Int32":
-        //            propertyInfo.SetValue(this, Convert.ToInt32(value), null);
-        //            break;
-        //        case "String":
-        //            propertyInfo.SetValue(this, value.ToString(), null);
-        //            break;
-        //    }
-        //}
-        #endregion
     }
 }

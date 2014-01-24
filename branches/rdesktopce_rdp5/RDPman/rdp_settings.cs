@@ -45,6 +45,9 @@ namespace RDPman
     public class rdp_settings
     {
         #region FIELDS
+        [XmlElement]
+        public string ServerNameOrIP = "192.168.0.112";
+
         //-g geometry
         [XmlElement]
         public int DesktopHeight{
@@ -86,13 +89,59 @@ namespace RDPman
 
         //-f fullscreen
         [XmlElement]
-        public int ScreenStyle
+        public eScreenStyles ScreenStyle
         {
             get { return _ScreenStyle; }
-            set { _ScreenStyle = value; }
+            set { 
+                _ScreenStyle = value;
+                switch (_ScreenStyle)
+                {
+                    case eScreenStyles.fullscreen_Fit:
+                    case eScreenStyles.notFullscreen_Fit:
+                        _fitToScreen = 1;
+                        break;
+                    default:
+                        _fitToScreen = 0;
+                        break;
+                }
+            }
         }
+
+        public enum eScreenStyles{
+             notFullscreen_NoFit=0,   // 0=no fullscreen + no fit, 
+             notFullscreen_Fit=1,     // 1= fit to screen+no fullscreen, 
+             fullscreen_NoFit=2,      // 2=fullscreen+no fit, 
+             fullscreen_Fit=3,        // 3=fit+fullscreen
+            };
+
         [XmlIgnore]
-        int _ScreenStyle = 0;
+        eScreenStyles _ScreenStyle = 0;
+
+        [XmlIgnore]
+        int _fitToScreen = 0;       // either use width and height or fit2screen
+
+        [XmlIgnore]
+        public int fit2screen
+        {
+            get { return _fitToScreen; }
+            set
+            {
+                _fitToScreen = value;
+                if (_fitToScreen == 0 && ScreenStyle == eScreenStyles.fullscreen_Fit)
+                    _ScreenStyle = eScreenStyles.fullscreen_NoFit;
+                else if (_fitToScreen == 0 && ScreenStyle == eScreenStyles.notFullscreen_Fit)
+                    _ScreenStyle = eScreenStyles.notFullscreen_NoFit;
+                else if (_fitToScreen == 1 && ScreenStyle == eScreenStyles.fullscreen_NoFit)
+                    _ScreenStyle = eScreenStyles.fullscreen_Fit;
+                else if (_fitToScreen == 1 && ScreenStyle == eScreenStyles.notFullscreen_NoFit)
+                    _ScreenStyle = eScreenStyles.notFullscreen_Fit;
+                if (_fitToScreen == 1)
+                {
+                    this._DesktopWidth = win32.ScreenWidth;
+                    this._DesktopHeight = win32.ScreenHeight;
+                }
+            }
+        }
 
         //-u user name
         [XmlElement]
@@ -115,38 +164,39 @@ namespace RDPman
             set{
                 if (value == null || value == "" || value == String.Empty)
                     _password = "";
-                if (value.Length > 32)
+                if (value.StartsWith("0200"))
                 { //this is a encrypted password
+                    System.Diagnostics.Debug.WriteLine("SET val='" + value + "'");
                     _password = DPAPI.Decrypt(value);
                 }
                 else
                 {
                     //string sEnc = DPAPI.EncryptRDP(value, "rdp");
+                    System.Diagnostics.Debug.WriteLine("SET val='" + value + "'"); 
                     _password = value;
                 }
-                System.Diagnostics.Debug.WriteLine("SET pw=" + _password);
+                System.Diagnostics.Debug.WriteLine("SET _pass=" + _password);
             }
             get
             {
-                string s = DPAPI.EncryptRDP(_password, "rdp");
-                System.Diagnostics.Debug.WriteLine("GET pw=" + s);
-                System.Diagnostics.Debug.WriteLine("GET   =" + _password);
-                return s;
+                if (_password != "")
+                {
+                    string s = DPAPI.EncryptRDP(_password, "rdp");
+                    System.Diagnostics.Debug.WriteLine("GET pw='" + s);
+                    System.Diagnostics.Debug.WriteLine("_pass ='" + _password);
+                    return s;
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("GET pw=''");
+                    return "";
+                }
                 //return _password;
             }
         }
 
         [XmlIgnore]
-        private string _password;
-        //[XmlIgnore]
-        //private string _passwordClearText
-        //{
-        //    get
-        //    {
-        //        string s = DPAPI.Decrypt(_password);
-        //        return s;
-        //    }
-        //}
+        private string _password="";
 
         //-d domain
         [XmlElement]
@@ -180,13 +230,13 @@ namespace RDPman
 
         //-n hostname
         [XmlElement]
-        public string ServerName
+        public string HostName
         {
-            get { return _ServerName; }
-            set { _ServerName = value; }
+            get { return _HostName; }
+            set { _HostName = value; }
         }
         [XmlIgnore]
-        string _ServerName = "192.168.0.112";
+        string _HostName = "";
 
         //-x clipboard, currently not supported
         [XmlElement]
@@ -227,12 +277,15 @@ namespace RDPman
         int _SavePassword = 1;
         #endregion
         
-public string getArgList()
+    public string getArgList()
         {
             string sRet = "";
             //-g
             sRet += " -g "+DesktopHeight.ToString()+"x"+DesktopWidth.ToString();
-            sRet += " -n " + ServerName + " -t " + MCSPort.ToString();
+            
+        if(HostName.Length>0)
+            sRet += " -n " + HostName;
+        sRet += " -t " + MCSPort.ToString();
             sRet += " -u " + UserName ;
             if(Password.Length>0)
                 sRet += " -p " + DPAPI.Decrypt(Password);// _passwordClearText;
@@ -246,10 +299,13 @@ public string getArgList()
             if (usebarcodereader == 1)
                 sRet += " -b";
 
-            if (ScreenStyle == 1)
+            if ( ScreenStyle == eScreenStyles.fullscreen_Fit ||
+                 ScreenStyle == eScreenStyles.fullscreen_NoFit)
                 sRet += " -f ";
 
             sRet += " -a " + ColorDepthID.ToString();
+
+            sRet += " " + ServerNameOrIP;
 
             return sRet;
         }
@@ -325,9 +381,13 @@ public string getArgList()
                     else
                         sb.Append(String.Format(sLine, ""));
                 }
+                else if (sLine.StartsWith("HostName"))
+                {
+                    sb.Append(string.Format(sLine, HostName));
+                }
                 else if (sLine.StartsWith("ServerName"))
                 {
-                    sb.Append(string.Format(sLine, ServerName));
+                    sb.Append(string.Format(sLine, ServerNameOrIP));
                 }
                 else if (sLine.StartsWith("UserName"))
                 {
@@ -347,10 +407,11 @@ public string getArgList()
                 }
                 else if (sLine.StartsWith("ScreenStyle"))
                 {
-                    if(ScreenStyle==1)
-                        sb.Append(string.Format(sLine, "2"));
-                    else
-                        sb.Append(string.Format(sLine, "0"));
+                    sb.Append(string.Format(sLine, (int)ScreenStyle));
+                    //if(ScreenStyle==1)
+                    //    sb.Append(string.Format(sLine, "2"));
+                    //else
+                    //    sb.Append(string.Format(sLine, "0"));
                 }
                 else if (sLine.StartsWith("ColorDepthID"))
                 {
@@ -386,7 +447,7 @@ public string getArgList()
             bool bRet = false;
             string sXml;
             sXml = myxml.SerializeToXmlString(this);
-            using (StreamWriter sw = new StreamWriter(sFile + ".xml"))
+            using (StreamWriter sw = new StreamWriter(sFile))// + ".xml"))
             {
                 sw.WriteLine(sXml);
                 bRet = true;
@@ -503,105 +564,106 @@ public string getArgList()
 	        "ScreenStyle:i:{0}\r\n",  //0=no fullscreen + no fit, 1= fit to screen+no fullscreen, 2=fullscreen+no fit, 3=fit+fullscreen
 	        "ColorDepthID:i:{0}\r\n", //changed from {0} to {0} with version 4
             "rdesktopce:s:{0}\r\n",
+	        "HostName:s:{0}\r\n",
 	        null
         };
         #region SAVELOADSETTINGS
-        string settingsfile = "settings.dat";
-        /// <summary>
-        /// does not work correctly for password
-        /// </summary>
-        public void Load()
-        {
-            string AppPath;
-            AppPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
-            if (!AppPath.EndsWith(@"\"))
-                AppPath += @"\"; 
+        //string settingsfile = "settings.dat";
+        ///// <summary>
+        ///// does not work correctly for password
+        ///// </summary>
+        //public void Load()
+        //{
+        //    string AppPath;
+        //    AppPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+        //    if (!AppPath.EndsWith(@"\"))
+        //        AppPath += @"\"; 
             
-            if (File.Exists(AppPath + settingsfile))
-            {
-                Type type = this.GetType();
+        //    if (File.Exists(AppPath + settingsfile))
+        //    {
+        //        Type type = this.GetType();
 
-                string propertyName, value;
-                string[] temp;
-                char[] splitChars = new char[] { '|' };
-                PropertyInfo propertyInfo;
+        //        string propertyName, value;
+        //        string[] temp;
+        //        char[] splitChars = new char[] { '|' };
+        //        PropertyInfo propertyInfo;
 
-                string[] settingsLines;// File.ReadAllLines("settings.dat");
-                List<string> sLines = new List<string>();
-                try
-                {
-                    using (StreamReader sr = new StreamReader(AppPath + settingsfile))
-                    {
-                        string line = "";
-                        line = sr.ReadLine();
-                        while (line != null)
-                        {
-                            sLines.Add(line);
-                            line = sr.ReadLine();
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    System.Diagnostics.Debug.WriteLine("The settings file could not be read:");
-                    System.Diagnostics.Debug.WriteLine(e.Message);
-                }
-                settingsLines = sLines.ToArray();
-                foreach (string s in settingsLines)
-                {
-                    temp = s.Split(splitChars);
-                    if (temp.Length == 2)
-                    {
-                        propertyName = temp[0];
-                        value = temp[1];
-                        propertyInfo = type.GetProperty(propertyName);
-                        if (propertyInfo != null)
-                            this.SetProperty(propertyInfo, value);
-                        System.Diagnostics.Debug.WriteLine("Load: " + propertyName + "/" + value);
-                    }
-                }
-            }
-        }
-        public void Save()
-        {
-            string AppPath;
-            AppPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
-            if (!AppPath.EndsWith(@"\"))
-                AppPath += @"\";
+        //        string[] settingsLines;// File.ReadAllLines("settings.dat");
+        //        List<string> sLines = new List<string>();
+        //        try
+        //        {
+        //            using (StreamReader sr = new StreamReader(AppPath + settingsfile))
+        //            {
+        //                string line = "";
+        //                line = sr.ReadLine();
+        //                while (line != null)
+        //                {
+        //                    sLines.Add(line);
+        //                    line = sr.ReadLine();
+        //                }
+        //            }
+        //        }
+        //        catch (Exception e)
+        //        {
+        //            System.Diagnostics.Debug.WriteLine("The settings file could not be read:");
+        //            System.Diagnostics.Debug.WriteLine(e.Message);
+        //        }
+        //        settingsLines = sLines.ToArray();
+        //        foreach (string s in settingsLines)
+        //        {
+        //            temp = s.Split(splitChars);
+        //            if (temp.Length == 2)
+        //            {
+        //                propertyName = temp[0];
+        //                value = temp[1];
+        //                propertyInfo = type.GetProperty(propertyName);
+        //                if (propertyInfo != null)
+        //                    this.SetProperty(propertyInfo, value);
+        //                System.Diagnostics.Debug.WriteLine("Load: " + propertyName + "/" + value);
+        //            }
+        //        }
+        //    }
+        //}
+        //public void Save()
+        //{
+        //    string AppPath;
+        //    AppPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+        //    if (!AppPath.EndsWith(@"\"))
+        //        AppPath += @"\";
             
-            Type type = this.GetType();
-            PropertyInfo[] properties = type.GetProperties();
-            try
-            {
-                using (TextWriter tw = new StreamWriter(AppPath + settingsfile))
-                {
-                    foreach (PropertyInfo propertyInfo in properties)
-                    {
-                        tw.WriteLine(propertyInfo.Name + "|" + propertyInfo.GetValue(this, null));
-                        System.Diagnostics.Debug.WriteLine(propertyInfo.Name + "|" + propertyInfo.GetValue(this, null));
-                    }
-                    tw.Flush();
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine("Exception in Save(): " + ex.Message);
-            }
-            //tw.Close();
-        }
+        //    Type type = this.GetType();
+        //    PropertyInfo[] properties = type.GetProperties();
+        //    try
+        //    {
+        //        using (TextWriter tw = new StreamWriter(AppPath + settingsfile))
+        //        {
+        //            foreach (PropertyInfo propertyInfo in properties)
+        //            {
+        //                tw.WriteLine(propertyInfo.Name + "|" + propertyInfo.GetValue(this, null));
+        //                System.Diagnostics.Debug.WriteLine(propertyInfo.Name + "|" + propertyInfo.GetValue(this, null));
+        //            }
+        //            tw.Flush();
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        System.Diagnostics.Debug.WriteLine("Exception in Save(): " + ex.Message);
+        //    }
+        //    //tw.Close();
+        //}
 
-        public void SetProperty(PropertyInfo propertyInfo, object value)
-        {
-            switch (propertyInfo.PropertyType.Name)
-            {
-                case "Int32":
-                    propertyInfo.SetValue(this, Convert.ToInt32(value), null);
-                    break;
-                case "String":
-                    propertyInfo.SetValue(this, value.ToString(), null);
-                    break;
-            }
-        }
+        //public void SetProperty(PropertyInfo propertyInfo, object value)
+        //{
+        //    switch (propertyInfo.PropertyType.Name)
+        //    {
+        //        case "Int32":
+        //            propertyInfo.SetValue(this, Convert.ToInt32(value), null);
+        //            break;
+        //        case "String":
+        //            propertyInfo.SetValue(this, value.ToString(), null);
+        //            break;
+        //    }
+        //}
         #endregion
     }
 }

@@ -74,7 +74,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /subsystem:windowsce,5.01"
-				AdditionalDependencies="lib\ssleay32.lib lib\libeay32.lib lib\wcecompat.lib"
+				AdditionalDependencies="lib\ssleay32.lib lib\libeay32.lib lib\wcecompat.lib lib\wcecompatex.lib"
 				OutputFile="$(OutDir)/rdesktopce.exe"
 				LinkIncremental="2"
 				DelayLoadDLLs="$(NOINHERIT)"

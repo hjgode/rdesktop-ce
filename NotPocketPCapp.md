@@ -1,0 +1,3 @@
+when you get an error that rdesktopce is not a valid PocketPC app or it is missing a library ensure you are not using an exe compiled with USE\_SCANNER defined.
+
+I have included some code to access the barcode scanner of In\*rm\*c devices directly from rdesktopce. These code lines are surrounded by #ifdef USE\_SCANNER. If this is defined, the code needs the external lib itcscan.dll, which is only available on In\*rm\*c devices with buitlin barcode scanner modules.
